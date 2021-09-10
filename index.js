@@ -247,4 +247,15 @@ client.on("messageCreate", async msg => {
 	}
 });
 
+client.on("guildMemberAdd", async member => {
+	let ksoftBanData = (await axios({
+		method: 'get',
+		url: 'https://bans-data.ksoft.si/bans/'+member.id
+	})).data;
+	if (ksoftBanData.active){
+		await member.send("You are global banned by ksoft.si. Join their server to appeal: https://discord.gg/7bqdQd4");
+		await member.ban({ reason: 'Ksoft.si global banned' }));
+	}
+});
+
 client.login(process.env.TOKEN);

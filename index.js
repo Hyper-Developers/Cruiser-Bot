@@ -45,7 +45,10 @@ statcord.on("autopost-start", () => {
 const targetRatelimits60s = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'targetRatelimits60s'});
 const maximumRatelimits3s = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'maximumRatelimits3s'});
 const virustotalApikeys = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'virustotalApikeys'});
+const enableDrep = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'enableDrep'});
+const enableKsoft = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'enableKsoft'});
 
+const invites = {};
 const messagesLast60s = {};
 const messagesLast3s = {};
 const repeatedLockdowns = {};
@@ -53,6 +56,14 @@ const repeatedLockdowns = {};
 client.on("ready", async () => {
 	console.log("Bot initialized");
 	statcord.autopost();
+});
+
+client.on("inviteCreate", async invite => {
+	invites[invite.guild.id].push(invite);
+});
+
+client.on("inviteDelete", async invite => {
+	invites[invite.guild.id] = invites[invite.guild.id].filter(i => i.code != invite.code);
 });
 
 client.on('interactionCreate', async interaction => {
@@ -203,7 +214,7 @@ client.on("messageCreate", async msg => {
 		}));
 		var newmsg = null;
 		if (urls.length || attachments.length){
-			newmsg = await msg.channel.send("<a:analyzinga:881686382941179924> Scanning URLs and/or attachments...");
+			newmsg = await msg.reply("<a:analyzinga:881686382941179924> Scanning URLs and/or attachments...");
 		}
 		var issus = false;
 		for (var i = 0; i < urls.length; i++){
@@ -248,13 +259,26 @@ client.on("messageCreate", async msg => {
 });
 
 client.on("guildMemberAdd", async member => {
+	if (!invites[g.id]) invites[g.id] = await g.fetchInvites();
 	let ksoftBanData = (await axios({
 		method: 'get',
 		url: 'https://bans-data.ksoft.si/bans/'+member.id
 	})).data;
+	let discordRepInfractionsData = (await axios({
+		method: 'get',
+		url: 'https://discordrep.com/api/v3/infractions/'+member.id,
+		headers: {
+			authorization: process.env.DREP
+		}
+	}).data;
 	if (ksoftBanData.active){
 		await member.send("You are global banned by ksoft.si. Join their server to appeal: https://discord.gg/7bqdQd4");
-		await member.ban({ reason: 'Ksoft.si global banned' }));
+	}
+	if (false){
+		await member.send("You are global banned by DiscordRep. Join their server to appeal: https://discord.gg/Cy2RMwh");
+	}
+	if (ksoftBanData.active || false){
+		await member.kick((ksoftBanData.active ? 'Ksoft.si' : 'DiscordRep') + ((ksoftBanData.active && false) ? ' and DiscordRep' : '') + ' global banned');
 	}
 });
 

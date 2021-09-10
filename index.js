@@ -48,7 +48,7 @@ const virustotalApikeys = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), na
 
 const messagesLast60s = {};
 const messagesLast3s = {};
-
+const repeatedLockdowns = {};
 
 client.on("ready", async () => {
 	console.log("Bot initialized");
@@ -115,121 +115,134 @@ client.on('interactionCreate', async interaction => {
 	}
 });
 
-client.on("messageCreate", async msg => { 
-	if (msg.author.bot) return;
-	if (!(await virustotalApikeys.get(msg.guild.id))){
-		console.log("API Key not config'd");
-		return;
-	}
-	const defaultTimedInstance = nvt.makeAPI();
-	defaultTimedInstance.setKey(await virustotalApikeys.get(msg.guild.id));
-	var urls = Array.from(getUrls(msg.content));
-	var attachments = [];
-        await Promise.all(msg.attachments.map(async attachment => {
-		if (attachment && attachment.proxyURL){
-			!fs.existsSync(`./assets/`) && fs.mkdirSync(`./assets/`, { recursive: true })
-			var attpath = path.resolve("/tmp/cruiser/scan", attachment.name);
-			await wget(attachment.url, { output: attpath, onStart: console.log, onProgress: console.log });
-			attachments.push({
-				filename: attpath,
-				mimetype: attachment.contentType,
-			})
-		}
-        }));
-	console.log("Download done");
-	var newmsg = null;
-	if (urls.length || attachments.length){
-		newmsg = await msg.channel.send("<a:analyzinga:881686382941179924> Scanning URLs and/or attachments...");
-	}
-	var issus = false;
-	for (var i = 0; i < urls.length; i++){
-		const analysisraw = await util.promisify(defaultTimedInstance.initialScanURL)(urls[i]);
-		const analysis = JSON.parse(analysisraw).data.id;
-		const scanraw = await util.promisify(defaultTimedInstance.getAnalysisInfo)(analysis);
-		const scan = JSON.parse(scanraw).data.attributes.stats;
-		const scanlink = "https://www.virustotal.com/gui/url/"+analysis.substring(
-		    analysis.indexOf("-") + 1, 
-		    analysis.lastIndexOf("-")
-		);
-		if (scan.malicious){
-			await newmsg.edit("<:bad:881629455964061717> URL sent by user <@!"+msg.author.id+"> is unsafe/malicious:\n"+scanlink);
-			await msg.delete();
-			return;
-		} else if (scan.suspicious && !issus){
-			await newmsg.edit("<:warning:881629456039571537> URL sent by user <@!"+msg.author.id+"> is suspicious:\n"+scanlink);
-			issus = true;
-		}
-	}
-	if (newmsg && !issus){
-		for (var i = 0; i < attachments.length; i++){
-			const fileraw = await util.promisify(defaultTimedInstance.uploadFile)(attachments[i].filename, attachments[i].mimetype);
-			const analysis = nvt.sha256(await util.promisify(fs.readFile)(attachments[i].filename));
-			const scanlink = "https://www.virustotal.com/gui/file/"+analysis;
-			console.log(scanlink);
-			const scanraw = await util.promisify(defaultTimedInstance.fileLookup)(analysis);
-                        const scan = JSON.parse(scanraw).data.attributes.last_analysis_stats;
-			if (scan.malicious){
-				await newmsg.edit("<:bad:881629455964061717> Attachment sent by user <@!"+msg.author.id+"> is unsafe/malicious:\n"+scanlink);
-				await msg.delete();
-				return;
-			} else if (scan.suspicious && !issus){
-				await newmsg.edit("<:warning:881629456039571537> Attachment sent by user <@!"+msg.author.id+"> is suspicious:\n"+scanlink);
-				issus = true;
-			}
-		}
-		if (!issus){
-			await newmsg.edit("<:good:881629715419516958> Message is safe!");
-		}
-	}
-	console.log(urls);
-});
-
 client.on("messageCreate", async msg => {
 	const channel = msg.channel;
-	if (!(channel.id in messagesLast60s)){
-		messagesLast60s[channel.id] = 0;
-	}
-	if (msg.member && msg.member.id != msg.member.guild.ownerId && !msg.member.permissions.has("MANAGE_MESSAGES") && (!channel.permissionsFor(msg.member) || !channel.permissionsFor(msg.member).has("MANAGE_MESSAGES"))){
+	// Auto Slowmode
+	let targetRatelimit = await targetRatelimits60s.get(channel.id);
+	if (targetRatelimit && msg.member && !msg.member.bot && msg.member.id != msg.member.guild.ownerId && !msg.member.permissions.has("MANAGE_MESSAGES") && (!channel.permissionsFor(msg.member) || !channel.permissionsFor(msg.member).has("MANAGE_MESSAGES"))){
+		if (!(channel.id in messagesLast60s)){
+			messagesLast60s[channel.id] = 0;
+		}
 		messagesLast60s[channel.id] += 1;
 		setTimeout(async () => {
 			messagesLast60s[channel.id] -= 1;
-			if (await targetRatelimits60s.get(channel.id)){
-				await channel.setRateLimitPerUser(messagesLast60s[channel.id]/(await targetRatelimits60s.get(channel.id))*60, "message flow");
+			if (targetRatelimit && Math.floor(channel.rateLimitPerUser) != Math.floor(messagesLast60s[channel.id]/targetRatelimit*60)){
+				await channel.setRateLimitPerUser(messagesLast60s[channel.id]/targetRatelimit*60, "Automatic Slowmode of "+targetRatelimit+" per minute");
 			}
 		}, 60000);
-		if (await targetRatelimits60s.get(channel.id)){
-			await channel.setRateLimitPerUser(messagesLast60s[channel.id]/(await targetRatelimits60s.get(channel.id))*60, "message flow");
+		if (targetRatelimit && Math.floor(channel.rateLimitPerUser) != Math.floor(messagesLast60s[channel.id]/targetRatelimit*60)){
+			await channel.setRateLimitPerUser(messagesLast60s[channel.id]/targetRatelimit*60, "Automatic Slowmode of "+targetRatelimit+" per minute");
 		}
 	}
-});
-
-client.on("messageCreate", async msg => {
-	const channel = msg.channel;
-	if (!(channel.id in messagesLast3s)){
-		messagesLast3s[channel.id] = 0;
-	}
-	messagesLast3s[channel.id] += 1;
-	console.log(messagesLast3s[channel.id]);
-	setTimeout(async () => {
-		messagesLast3s[channel.id] -= 1;
-	}, 3000);
-	console.log(await maximumRatelimits3s.get(channel.id));
-	if (await maximumRatelimits3s.get(channel.id)){
-		if (await maximumRatelimits3s.get(channel.id) <= messagesLast3s[channel.id] && channel.permissionsFor(channel.guild.roles.everyone).has("SEND_MESSAGES")){
+	// Auto Lockdown
+	let maximumRatelimits = await maximumRatelimits3s.get(channel.id);
+	if (maximumRatelimits && msg.member && !msg.member.bot && msg.member.id != msg.member.guild.ownerId && !msg.member.permissions.has("MANAGE_MESSAGES") && (!channel.permissionsFor(msg.member) || !channel.permissionsFor(msg.member).has("MANAGE_MESSAGES"))){
+		if (!(channel.id in messagesLast3s)){
+			messagesLast3s[channel.id] = 0;
+			repeatedLockdowns[channel.id] = 0;
+		}
+		messagesLast3s[channel.id] += 1;
+		setTimeout(async () => {
+			messagesLast3s[channel.id] -= 1;
+		}, 3000);
+		if (maximumRatelimits <= messagesLast3s[channel.id] && channel.permissionsFor(channel.guild.roles.everyone).has("SEND_MESSAGES")){
 			await channel.permissionOverwrites.edit(channel.guild.roles.everyone, {
  				'SEND_MESSAGES': false
 			}, {
 				reason: "Automatic lockdown triggered by influx of messages"
 			});
-                        await channel.send("Automatic lockdown for 1 minute triggered by influx of messages");
+			let doRepeat = true;
+			while (doRepeat) {
+				let lastMsgs = await channel.messages.fetch({ messages: 50 });
+				let threesecsago = new Date(Date.now() - 3000);
+				lastMsgs = lastMsgs.filter(m => m.createdAt.getTime() >= threesecsago.getTime());
+				doRepeat = lastMsgs.length == 50;
+				channel.bulkDelete(lastMsgs.filter(
+					m => m &&
+						m.member &&
+						!m.member.bot &&
+						m.member.id != m.guild.ownerId &&
+						!m.member.permissions.has("MANAGE_MESSAGES") &&
+						(!channel.permissionsFor(m.member) || !channel.permissionsFor(m.member).has("MANAGE_MESSAGES"))
+				));
+			}
+			let lockdownExp = repeatedLockdowns[channel.id];
+			repeatedLockdowns[channel.id] += 1;
+                        await channel.send("Automatic lockdown for "+5*Math.pow(2, lockdownExp)+" seconds triggered by influx of messages");
                         setTimeout(async () => {
                                 await channel.permissionOverwrites.edit(channel.guild.roles.everyone, {
                                         'SEND_MESSAGES': true
                                 }, {    
                                         reason: "Lockdown ended"
                                 });
-				await channel.send("Automatic lockdown for 1 minute has ended.");
-                        }, 60000);
+				await channel.send("Automatic lockdown for "+5*Math.pow(2, lockdownExp)+" seconds has ended.");
+				setTimeout(async () => {
+					if (repeatedLockdowns[channel.id] == lockdownExp + 1){
+						repeatedLockdowns[channel.id] = 0;
+					}
+				}, 3000);
+                        }, 5*Math.pow(2, lockdownExp));
+		}
+	}
+	// Virus & Link Scans
+	if ((await virustotalApikeys.get(msg.guild.id))){
+		const defaultTimedInstance = nvt.makeAPI();
+		defaultTimedInstance.setKey(await virustotalApikeys.get(msg.guild.id));
+		var urls = Array.from(getUrls(msg.content));
+		var attachments = [];
+		await Promise.all(msg.attachments.map(async attachment => {
+			if (attachment && attachment.proxyURL){
+				!fs.existsSync(`./assets/`) && fs.mkdirSync(`./assets/`, { recursive: true })
+				var attpath = path.resolve("/tmp/cruiser/scan", attachment.name);
+				await wget(attachment.url, { output: attpath, onStart: console.log, onProgress: console.log });
+				attachments.push({
+					filename: attpath,
+					mimetype: attachment.contentType,
+				})
+			}
+		}));
+		var newmsg = null;
+		if (urls.length || attachments.length){
+			newmsg = await msg.channel.send("<a:analyzinga:881686382941179924> Scanning URLs and/or attachments...");
+		}
+		var issus = false;
+		for (var i = 0; i < urls.length; i++){
+			const analysisraw = await util.promisify(defaultTimedInstance.initialScanURL)(urls[i]);
+			const analysis = JSON.parse(analysisraw).data.id;
+			const scanraw = await util.promisify(defaultTimedInstance.getAnalysisInfo)(analysis);
+			const scan = JSON.parse(scanraw).data.attributes.stats;
+			const scanlink = "https://www.virustotal.com/gui/url/"+analysis.substring(
+			    analysis.indexOf("-") + 1, 
+			    analysis.lastIndexOf("-")
+			);
+			if (scan.malicious){
+				await newmsg.edit("<:bad:881629455964061717> URL sent by user <@!"+msg.author.id+"> is unsafe/malicious:\n"+scanlink);
+				await msg.delete();
+				return;
+			} else if (scan.suspicious && !issus){
+				await newmsg.edit("<:warning:881629456039571537> URL sent by user <@!"+msg.author.id+"> is suspicious:\n"+scanlink);
+				issus = true;
+			}
+		}
+		if (newmsg && !issus){
+			for (var i = 0; i < attachments.length; i++){
+				const fileraw = await util.promisify(defaultTimedInstance.uploadFile)(attachments[i].filename, attachments[i].mimetype);
+				const analysis = nvt.sha256(await util.promisify(fs.readFile)(attachments[i].filename));
+				const scanlink = "https://www.virustotal.com/gui/file/"+analysis;
+				const scanraw = await util.promisify(defaultTimedInstance.fileLookup)(analysis);
+				const scan = JSON.parse(scanraw).data.attributes.last_analysis_stats;
+				if (scan.malicious){
+					await newmsg.edit("<:bad:881629455964061717> Attachment sent by user <@!"+msg.author.id+"> is unsafe/malicious:\n"+scanlink);
+					await msg.delete();
+					return;
+				} else if (scan.suspicious && !issus){
+					await newmsg.edit("<:warning:881629456039571537> Attachment sent by user <@!"+msg.author.id+"> is suspicious:\n"+scanlink);
+					issus = true;
+				}
+			}
+			if (!issus){
+				await newmsg.edit("<:good:881629715419516958> Message is safe!");
+			}
 		}
 	}
 });

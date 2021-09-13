@@ -260,24 +260,69 @@ client.on("messageCreate", async msg => {
 
 client.on("guildMemberAdd", async member => {
 	if (!invites[g.id]) invites[g.id] = await g.fetchInvites();
-	let ksoftBanData = (await axios({
-		method: 'get',
-		url: 'https://bans-data.ksoft.si/bans/'+member.id
-	})).data;
-	let discordRepInfractionsData = (await axios({
-		method: 'get',
-		url: 'https://discordrep.com/api/v3/infractions/'+member.id,
-		headers: {
-			authorization: process.env.DREP
-		}
-	}).data;
-	if (ksoftBanData.active){
-		await member.send("You are global banned by ksoft.si. Join their server to appeal: https://discord.gg/7bqdQd4");
+	let ksoftBanData = null;
+	if (await enableKsoft.get(member.guild.id)) {
+		try {
+			ksoftBanData = (await axios({
+				method: 'get',
+				url: 'https://bans-data.ksoft.si/bans/'+member.id
+			})).data;
+		} catch {}
 	}
-	if (false){
-		await member.send("You are global banned by DiscordRep. Join their server to appeal: https://discord.gg/Cy2RMwh");
+	let discordRepInfractionsData = null;
+	if (await enableDrep.get(member.guild.id)) {
+		try {
+			discordRepInfractionsData = (await axios({
+				method: 'get',
+				url: 'https://discordrep.com/api/v3/infractions/'+member.id,
+				headers: {
+					authorization: process.env.DREP
+				}
+			}).data;
+		} catch {}
 	}
-	if (ksoftBanData.active || false){
+	if (ksoftBanData && ksoftBanData.active){
+		await member.send({
+			content: "You are global banned by ksoft.si: "+ksoftBanData.banData,
+			components: [{
+				type: "ACTION_ROW",
+				components: [{
+					type: "BUTTON",
+					style: "LINK",
+					url: "https://bans.ksoft.si/user/"+member.id,
+					label: "More Information (disabled due to bug)",
+					disabled: true
+				}, {
+					type: "BUTTON",
+					style: "LINK",
+					url: "https://discord.gg/7bqdQd4",
+					label: "Appeal"
+				}]
+			}]
+		});
+	}
+	if (discordRepInfractionsData && discordRepInfractionsData.type && discordRepInfractionsData.type.toLowerCase() == "ban"){
+		await member.send({
+			content: "You are global banned by DiscordRep.com: "+discordRepInfractionsData.reason,
+			components: [{
+				type: "ACTION_ROW",
+				components: [{
+					type: "BUTTON",
+					style: "LINK",
+					url: "https://discordrep.com/u/"+member.id,
+					label: "More Information"
+				}, {
+					type: "BUTTON",
+					style: "LINK",
+					url: "https://discord.gg/Cy2RMwh",
+					label: "Appeal"
+				}]
+			}]
+		});
+	}
+	// ref: https://git.farfrom.earth/aero/forks/drep.js/-/blob/master/src/endpoints/infractions.js
+	// https://git.farfrom.earth/aero/forks/drep.js/-/blob/master/lib/structures/Ban.js
+	if ((ksoftBanData && ksoftBanData.active) || (discordRepInfractionsData && discordRepInfractionsData.type && discordRepInfractionsData.type.toLowerCase() == "ban")){
 		await member.kick((ksoftBanData.active ? 'Ksoft.si' : 'DiscordRep') + ((ksoftBanData.active && false) ? ' and DiscordRep' : '') + ' global banned');
 	}
 });

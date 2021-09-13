@@ -10,12 +10,12 @@ Cruiser is a powerful anti-raid discord bot.
 
 ## List of planned features
 
-- [ ] Advanced Selfbot Detection
-- [ ] Automatic Nuke Reversion
+- [x] Advanced Selfbot Detection
+- [x] Bans Using (https://bans.ksoft.si)
+- [x] Bans Using (https://discordrep.com)
 - [ ] Webhook Abuse Detector
 - [ ] Abuse Detector
-- [x] Bans Using (https://bans.ksoft.si)
-- [ ] Bans Using (https://discordrep.com)
+- [ ] Automatic Un-Nuker
 - [ ] Smart Suspicious Account Detector
 - [ ] "I'm not a robot" Verification
 - [ ] Queues

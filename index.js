@@ -47,8 +47,10 @@ const maximumRatelimits3s = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), 
 const virustotalApikeys = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'virustotalApikeys'});
 const enableDrep = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'enableDrep'});
 const enableKsoft = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'enableKsoft'});
+const enableAntibot = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'maximumRatelimits3s'});
 
 const invites = {};
+const typings = {};
 const messagesLast60s = {};
 const messagesLast3s = {};
 const repeatedLockdowns = {};
@@ -65,6 +67,14 @@ client.on("inviteCreate", async invite => {
 client.on("inviteDelete", async invite => {
 	invites[invite.guild.id] = invites[invite.guild.id].filter(i => i.code != invite.code);
 });
+
+client.on("typingStart", async typing => {
+	if (!typings[typing.user.id]) typings[typing.user.id] = [];
+	typings[typing.user.id].push({
+		channel: typing.channel.id,
+		startedAt: typing.startedAt
+	});
+})
 
 client.on('interactionCreate', async interaction => {
 	if (!interaction.isCommand()) return;
@@ -128,6 +138,11 @@ client.on('interactionCreate', async interaction => {
 
 client.on("messageCreate", async msg => {
 	const channel = msg.channel;
+	// Anti bots
+	if (msg.member && !msg.member.bot && await enableAntibot.get(msg.guild.id)){
+		let typing = typings[typing.user.id].filter(t => t.channel == msg.channel.id)[0];
+		if (!typing || typing.startedAt > new Date(Date.now() - msg.content.length/10) || msg.embeds) return msg.delete();
+	}
 	// Auto Slowmode
 	let targetRatelimit = await targetRatelimits60s.get(channel.id);
 	if (targetRatelimit && msg.member && !msg.member.bot && msg.member.id != msg.member.guild.ownerId && !msg.member.permissions.has("MANAGE_MESSAGES") && (!channel.permissionsFor(msg.member) || !channel.permissionsFor(msg.member).has("MANAGE_MESSAGES"))){

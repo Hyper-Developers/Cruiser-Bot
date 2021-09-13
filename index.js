@@ -48,6 +48,7 @@ const virustotalApikeys = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), na
 const enableDrep = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'enableDrep'});
 const enableKsoft = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'enableKsoft'});
 const enableAntibot = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'enableAntibot'});
+const enableAntiwebhook = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'enableAntiwebhook'});
 
 const invites = {};
 const typings = {};
@@ -142,6 +143,13 @@ client.on("messageCreate", async msg => {
 	if (msg.member && !msg.member.bot && await enableAntibot.get(msg.guild.id)){
 		let typing = typings[typing.user.id].filter(t => t.channel == msg.channel.id)[0];
 		if (!typing || typing.startedAt > new Date(Date.now() - msg.content.length/10) || msg.embeds) return msg.delete();
+	}
+	// Anti webhook abuse
+	if (msg.webhookId && await enableAntiwebhook.get(msg.guild.id)){
+		if (msg.mentions.everyone || msg.mentions.roles.filter(r => r.members.length / r.guild.members.length > 0.2) || msg.mentions.users.length > 5){
+			(await msg.fetchWebhook()).delete();
+			return;
+		}
 	}
 	// Auto Slowmode
 	let targetRatelimit = await targetRatelimits60s.get(channel.id);

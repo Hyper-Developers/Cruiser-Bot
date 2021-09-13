@@ -47,7 +47,7 @@ const maximumRatelimits3s = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), 
 const virustotalApikeys = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'virustotalApikeys'});
 const enableDrep = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'enableDrep'});
 const enableKsoft = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'enableKsoft'});
-const enableAntibot = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'maximumRatelimits3s'});
+const enableAntibot = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'enableAntibot'});
 
 const invites = {};
 const typings = {};
@@ -284,6 +284,28 @@ client.on("guildMemberAdd", async member => {
 			})).data;
 		} catch {}
 	}
+	let ksoftBanned = ksoftBanData && ksoftBanData.active;
+	if (ksoftBanned){
+		await member.send({
+			content: "You are global banned by ksoft.si: "+ksoftBanData.banData,
+			components: [{
+				type: "ACTION_ROW",
+				components: [{
+					type: "BUTTON",
+					style: "LINK",
+					url: "https://bans.ksoft.si/user/"+member.id,
+					label: "Your Ksoft.si Ban Page",
+					disabled: true
+				}, {
+					type: "BUTTON",
+					style: "LINK",
+					url: "https://discord.gg/7bqdQd4",
+					label: "Appeal Ksoft.si Ban"
+				}]
+			}]
+		});
+		return member.kick("Ksoft.si: "+"TODO INSERT REASON HERE");
+	}
 	let discordRepInfractionsData = null;
 	if (await enableDrep.get(member.guild.id)) {
 		try {
@@ -296,27 +318,10 @@ client.on("guildMemberAdd", async member => {
 			}).data;
 		} catch {}
 	}
-	if (ksoftBanData && ksoftBanData.active){
-		await member.send({
-			content: "You are global banned by ksoft.si: "+ksoftBanData.banData,
-			components: [{
-				type: "ACTION_ROW",
-				components: [{
-					type: "BUTTON",
-					style: "LINK",
-					url: "https://bans.ksoft.si/user/"+member.id,
-					label: "More Information (disabled due to bug)",
-					disabled: true
-				}, {
-					type: "BUTTON",
-					style: "LINK",
-					url: "https://discord.gg/7bqdQd4",
-					label: "Appeal"
-				}]
-			}]
-		});
-	}
-	if (discordRepInfractionsData && discordRepInfractionsData.type && discordRepInfractionsData.type.toLowerCase() == "ban"){
+	let drepBanned = discordRepInfractionsData && discordRepInfractionsData.type && discordRepInfractionsData.type.toLowerCase() == "ban";
+	// ref: https://git.farfrom.earth/aero/forks/drep.js/-/blob/master/src/endpoints/infractions.js
+	// https://git.farfrom.earth/aero/forks/drep.js/-/blob/master/lib/structures/Ban.js
+	if (drepBanned){
 		await member.send({
 			content: "You are global banned by DiscordRep.com: "+discordRepInfractionsData.reason,
 			components: [{
@@ -325,20 +330,16 @@ client.on("guildMemberAdd", async member => {
 					type: "BUTTON",
 					style: "LINK",
 					url: "https://discordrep.com/u/"+member.id,
-					label: "More Information"
+					label: "Your DiscordRep Profile Page"
 				}, {
 					type: "BUTTON",
 					style: "LINK",
 					url: "https://discord.gg/Cy2RMwh",
-					label: "Appeal"
+					label: "Appeal DiscordRep Ban"
 				}]
 			}]
 		});
-	}
-	// ref: https://git.farfrom.earth/aero/forks/drep.js/-/blob/master/src/endpoints/infractions.js
-	// https://git.farfrom.earth/aero/forks/drep.js/-/blob/master/lib/structures/Ban.js
-	if ((ksoftBanData && ksoftBanData.active) || (discordRepInfractionsData && discordRepInfractionsData.type && discordRepInfractionsData.type.toLowerCase() == "ban")){
-		await member.kick((ksoftBanData.active ? 'Ksoft.si' : 'DiscordRep') + ((ksoftBanData.active && false) ? ' and DiscordRep' : '') + ' global banned');
+		return member.kick("DiscordRep: "+discordRepInfractionsData.reason);
 	}
 });
 

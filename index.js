@@ -42,13 +42,13 @@ statcord.on("autopost-start", () => {
     console.log("Started autopost");
 });
 
-const targetRatelimits60s = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'targetRatelimits60s'});
-const maximumRatelimits3s = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'maximumRatelimits3s'});
-const virustotalApikeys = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'virustotalApikeys'});
-const enableDrep = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'enableDrep'});
-const enableKsoft = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'enableKsoft'});
-const enableAntibot = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'enableAntibot'});
-const enableAntiwebhook = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'enableAntiwebhook'});
+client.targetRatelimits60s = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'targetRatelimits60s'});
+client.maximumRatelimits3s = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'maximumRatelimits3s'});
+client.virustotalApikeys = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'virustotalApikeys'});
+client.enableDrep = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'enableDrep'});
+client.enableKsoft = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'enableKsoft'});
+client.enableAntibot = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'enableAntibot'});
+client.enableAntiwebhook = new Keyv({ store: new KeyvMySQL(process.env.MYSQL), namespace: 'enableAntiwebhook'});
 
 const invites = {};
 const typings = {};

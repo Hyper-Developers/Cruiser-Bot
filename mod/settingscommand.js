@@ -1,6 +1,11 @@
 module.exports = async (client) => {
   client.on("interactionCreate", async (interaction) => {
-    if (!interaction.isCommand() || interaction.commandName != "cruiser" && interaction.options.getSubcommandGroup() != "settings") return;
+    if (
+      !interaction.isCommand() ||
+      (interaction.commandName != "cruiser" &&
+        interaction.options.getSubcommandGroup() != "settings")
+    )
+      return;
     if (
       !interaction.member ||
       !(
@@ -13,19 +18,30 @@ module.exports = async (client) => {
         ephemeral: true,
       });
     const settings = {
-      "autoslowmode": [client.targetRatelimits60s, interaction.channelId, "target"],
-      "autolockdown": [client.maximumRatelimits3s, interaction.channelId, "threshold"],
-      "virustotal": [client.virustotalApikeys, interaction.guild.id, "apikey"],
-      "ksoft": [client.enableKsoft, interaction.guild.id, "enabled"],
-      "discordrep": [client.enableDrep, interaction.guild.id, "enabled"],
-      "antibot": [client.enableAntibot, interaction.guild.id, "enabled"],
-      "antiwebhook": [client.enableAntiwebhook, interaction.guild.id, "enabled"],
+      autoslowmode: [
+        client.targetRatelimits60s,
+        interaction.channelId,
+        "target",
+      ],
+      autolockdown: [
+        client.maximumRatelimits3s,
+        interaction.channelId,
+        "threshold",
+      ],
+      virustotal: [client.virustotalApikeys, interaction.guild.id, "apikey"],
+      ksoft: [client.enableKsoft, interaction.guild.id, "enabled"],
+      discordrep: [client.enableDrep, interaction.guild.id, "enabled"],
+      antibot: [client.enableAntibot, interaction.guild.id, "enabled"],
+      antiwebhook: [client.enableAntiwebhook, interaction.guild.id, "enabled"],
     };
     const thesetting = settings[interaction.options.getSubcommand()];
-    if (interaction.options.get(thesetting[2]) == null){
+    if (interaction.options.get(thesetting[2]) == null) {
       await thesetting[0].delete(thesetting[1]);
       return await interaction.reply({
-        content: "Unset option `"+interaction.options.getSubcommand()+"` succesfully.",
+        content:
+          "Unset option `" +
+          interaction.options.getSubcommand() +
+          "` succesfully.",
         ephemeral: true,
       });
     } else {
@@ -34,7 +50,12 @@ module.exports = async (client) => {
         interaction.options.get(thesetting[2]).value
       );
       return await interaction.reply({
-        content: "Set option `"+interaction.options.getSubcommand()+"` to `"+interaction.options.get(thesetting[2]).value+"` successfully.",
+        content:
+          "Set option `" +
+          interaction.options.getSubcommand() +
+          "` to `" +
+          interaction.options.get(thesetting[2]).value +
+          "` successfully.",
         ephemeral: true,
       });
     }

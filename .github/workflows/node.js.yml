@@ -36,9 +36,14 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
     - run: npm i --package-lock-only
-    - run: git push
+    - run: |
+          git push
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "Updated package-lock.json"
+          git push
   build:
     needs: updatepackagelock
     runs-on: ubuntu-latest

@@ -1,4 +1,5 @@
 # Cruiser
+
 Cruiser is a powerful anti-raid discord bot.
 
 ## List of features
@@ -20,4 +21,4 @@ Cruiser is a powerful anti-raid discord bot.
 - [ ] "I'm not a robot" Verification
 - [ ] Queues
 
-Invite it here: https://discord.com/api/oauth2/authorize?client_id=834923899032567900&permissions=8&scope=applications.commands%20bot. 
+Invite it here: https://discord.com/api/oauth2/authorize?client_id=834923899032567900&permissions=8&scope=applications.commands%20bot.

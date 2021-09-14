@@ -18,16 +18,8 @@ module.exports = async (client) => {
         ephemeral: true,
       });
     const settings = {
-      autoslowmode: [
-        client.targetRatelimits60s,
-        interaction.channelId,
-        "target",
-      ],
-      autolockdown: [
-        client.maximumRatelimits3s,
-        interaction.channelId,
-        "threshold",
-      ],
+      autoslowmode: [client.targetRatelimits60s, interaction.interaction.channel.id, "target"],
+      autolockdown: [client.maximumRatelimits3s, interaction.interaction.channel.id, "threshold"],
       virustotal: [client.virustotalApikeys, interaction.guild.id, "apikey"],
       ksoft: [client.enableKsoft, interaction.guild.id, "enabled"],
       discordrep: [client.enableDrep, interaction.guild.id, "enabled"],

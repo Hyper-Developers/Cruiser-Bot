@@ -42,7 +42,7 @@ module.exports = async client => {
           headers: {
             authorization: process.env.DREP
           }
-        }).data;
+        })).data;
       } catch {}
     }
     let drepBanned = discordRepInfractionsData && discordRepInfractionsData.type && discordRepInfractionsData.type.toLowerCase() == "ban";
@@ -68,5 +68,5 @@ module.exports = async client => {
       });
       return member.kick("DiscordRep: "+discordRepInfractionsData.reason);
     }
-});
+  });
 }

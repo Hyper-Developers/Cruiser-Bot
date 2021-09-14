@@ -1,2 +1,4 @@
 #!/usr/bin/bash
-node index.js
+while : ; do
+  node index.js
+done

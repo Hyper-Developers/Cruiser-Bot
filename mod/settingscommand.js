@@ -30,7 +30,7 @@ module.exports = async (client) => {
       ],
       virustotal: [client.virustotalApikeys, interaction.guild.id, "apikey"],
       ksoft: [client.enableKsoft, interaction.guild.id, "enabled"],
-      discordrep: [client.enableDrep, interaction.guild.id, "enabled"],
+      drep: [client.enableDrep, interaction.guild.id, "enabled"],
       antibot: [client.enableAntibot, interaction.guild.id, "enabled"],
       antiwebhook: [client.enableAntiwebhook, interaction.guild.id, "enabled"],
     };

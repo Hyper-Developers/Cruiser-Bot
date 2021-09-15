@@ -26,10 +26,11 @@ module.exports = async (client) => {
   client.on("inviteDelete", async (invite) => refreshInvites(invite.guild));
 
   client.on("guildMemberAdd", async (member) => {
-    if (!(await client.enableInvitetrack.get(member.guild.id))) return;
+    let guild = member.guild;
+    if (!(await client.enableInvitetrack.get(guild.id))) return;
     if (member.partial) member = await member.fetch();
-    let welcomeChannel = await this.client.channels.fetch(
-      await client.invitetrackChannel.get(member.guild.id)
+    let welcomeChannel = await client.channels.fetch(
+      await client.invitetrackChannel.get(guild.id)
     );
     let inviteMethod = {
       type: "UNKNOWN",
@@ -39,12 +40,12 @@ module.exports = async (client) => {
       let backoff = 0;
       while ((!entry || entry.target.id != member.id) && backoff <= 5) {
         entry = (
-          await member.guild.fetchAuditLogs({
+          await guild.fetchAuditLogs({
             limit: 1,
             type: "BOT_ADD",
           })
         ).entries.first();
-        await sleep(1000 * Math.pow(2, backoff));
+        backoff < 5 ? await sleep(1000 * Math.pow(2, backoff)) : null;
         backoff++;
       }
       inviteMethod = {
@@ -52,9 +53,9 @@ module.exports = async (client) => {
         inviter: entry && entry.target.id == member.id ? entry.executor.id : 0,
       };
     } else {
-      const cachedInvites = guildInvites[member.guild.id];
-      const newInvites = await fetchInvites(member.guild);
-      guildInvites[member.guild.id] = newInvites;
+      const cachedInvites = guildInvites[guild.id];
+      const newInvites = await fetchInvites(guild);
+      guildInvites[guild.id] = newInvites;
       const usedInvite = newInvites.find(
         (inv) =>
           newInvites[inv.code].uses > inv.uses ||
@@ -62,7 +63,7 @@ module.exports = async (client) => {
       );
       if (!usedInvite) {
         // unknown is default
-      } else if (usedInvite.code === member.guild.vanityURLCode) {
+      } else if (usedInvite.code === guild.vanityURLCode) {
         inviteMethod = {
           type: "VANITY_INVITE",
           code: usedInvite.code,
@@ -70,9 +71,9 @@ module.exports = async (client) => {
       } else if (
         usedInvite.code === (await guild.fetchWidgetSettings()).enabled
           ? (
-              await member.guild.invites.fetch(
+              await guild.invites.fetch(
                 (
-                  await member.guild.fetchWidget()
+                  await guild.fetchWidget()
                 ).instantInvite
               )
             ).code

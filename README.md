@@ -23,6 +23,6 @@ Cruiser is a powerful anti-raid discord bot.
 
 Invite it here: https://discord.com/api/oauth2/authorize?client_id=834923899032567900&permissions=8&scope=applications.commands%20bot.
 
-
 ## Licence
+
 AGPLv3

@@ -26,6 +26,7 @@ jobs:
       uses: creyD/prettier_action@v4.0
       with:
         prettier_options: --write **/*.{js,md}
+        only_changed: true
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2

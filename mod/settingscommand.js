@@ -47,7 +47,7 @@ module.exports = async (client) => {
       });
     } else {
       await thesetting[0].set(
-        interaction.channelId,
+        thesetting[1],
         interaction.options.get(thesetting[2]).value
       );
       return await interaction.reply({

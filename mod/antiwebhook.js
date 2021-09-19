@@ -8,7 +8,9 @@ module.exports = async (client) => {
         ) ||
         msg.mentions.users.length > 5
       ) {
-        await (await msg.fetchWebhook()).delete();
+        try {
+          await (await msg.fetchWebhook()).delete();
+        } catch {}
       }
     }
   });

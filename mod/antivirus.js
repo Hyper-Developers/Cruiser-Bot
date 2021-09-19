@@ -156,10 +156,10 @@ module.exports = async (client) => {
         }
       }))]);
       if (reaction && !msg.deleted){
+        if (!issus) {
+          msg.react("<:good:881629715419516958>");
+        }
         reaction.remove()
-      }
-      if (!issus) {
-        msg.react("<:good:881629715419516958>");
       }
     }
   });

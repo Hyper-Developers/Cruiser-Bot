@@ -20,12 +20,12 @@ module.exports = async (client) => {
     const settings = {
       autoslowmode: [
         client.targetRatelimits60s,
-        interaction.interaction.channel.id,
+        interaction.channel.id,
         "target",
       ],
       autolockdown: [
         client.maximumRatelimits3s,
-        interaction.interaction.channel.id,
+        interaction.channel.id,
         "threshold",
       ],
       virustotal: [client.virustotalApikeys, interaction.guild.id, "apikey"],

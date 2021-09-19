@@ -7,41 +7,45 @@ const fs = require("fs");
 
 module.exports = async (client) => {
   client.on("messageCreate", async (msg) => {
+    var reaction = null;
+    var urls = null;
+    var attachments = null;
+    var channel = msg.channel;
+    if (msg.guild && (await client.virustotalApikeys.get(msg.guild.id) || await client.ipqsApikeys.get(msg.guild.id))){
+        urls = Array.from(getUrls(msg.content));
+        attachments = [];
+        await Promise.all(
+          msg.attachments.map(async (attachment) => {
+            if (attachment && attachment.proxyURL) {
+              !fs.existsSync(`./assets/`) &&
+                fs.mkdirSync(`./assets/`, { recursive: true });
+              var attpath = path.resolve("/tmp/cruiser/scan", attachment.name);
+              await wget(attachment.url, {
+                output: attpath,
+                onStart: console.log,
+                onProgress: console.log,
+              });
+              attachments.push({
+                filename: attpath,
+                mimetype: attachment.contentType,
+              });
+            }
+          })
+        );
+        if (urls.length || attachments.length) {
+          reaction = await msg.react("<a:analyzing:884596286039396432>");
+        }
+    }
     if (msg.guild && await client.virustotalApikeys.get(msg.guild.id)) {
-      const channel = msg.channel;
       const defaultTimedInstance = nvt.makeAPI();
       defaultTimedInstance.setKey(
         await client.virustotalApikeys.get(msg.guild.id)
       );
-      var urls = Array.from(getUrls(msg.content));
-      var attachments = [];
-      await Promise.all(
-        msg.attachments.map(async (attachment) => {
-          if (attachment && attachment.proxyURL) {
-            !fs.existsSync(`./assets/`) &&
-              fs.mkdirSync(`./assets/`, { recursive: true });
-            var attpath = path.resolve("/tmp/cruiser/scan", attachment.name);
-            await wget(attachment.url, {
-              output: attpath,
-              onStart: console.log,
-              onProgress: console.log,
-            });
-            attachments.push({
-              filename: attpath,
-              mimetype: attachment.contentType,
-            });
-          }
-        })
-      );
-      var reaction = null;
-      if (urls.length || attachments.length) {
-        reaction = await msg.react("<a:analyzing:884596286039396432>");
-      }
       var issus = false;
-      for (var i = 0; i < urls.length; i++) {
+      await Promise.all([Promise.all(urls.map(async url => {
         const analysisraw = await util.promisify(
           defaultTimedInstance.initialScanURL
-        )(urls[i]);
+        )(url);
         const analysis = JSON.parse(analysisraw).data.id;
         const scanraw = await util.promisify(
           defaultTimedInstance.getAnalysisInfo
@@ -60,7 +64,9 @@ module.exports = async (client) => {
               "> is unsafe/malicious:\n" +
               scanlink
           );
-          await msg.delete();
+          if (!msg.deleted){
+            await msg.delete();
+          }
           return;
         } else if (!issus && ((scan.malicious && scan.malicious > 1) || (scan.malicious && scan.suspicious && (scan.malicious + scan.suspicious > 2)) || (scan.suspicious && scan.suspicious > 2))) {
           if (msg.deleted){
@@ -80,53 +86,52 @@ module.exports = async (client) => {
           }
           issus = true;
         }
-      }
-      if ((urls.length || attachments.length) && !issus) {
-        for (var i = 0; i < attachments.length; i++) {
-          const fileraw = await util.promisify(defaultTimedInstance.uploadFile)(
-            attachments[i].filename,
-            attachments[i].mimetype
+      })), Promise.all(attachments.map(async attachment => {
+        const fileraw = await util.promisify(defaultTimedInstance.uploadFile)(
+          attachment.filename,
+          attachment.mimetype
+        );
+        const analysis = nvt.sha256(
+          await util.promisify(fs.readFile)(attachment.filename)
+        );
+        const scanlink = "https://www.virustotal.com/gui/file/" + analysis;
+        const scanraw = await util.promisify(defaultTimedInstance.fileLookup)(
+          analysis
+        );
+        const scan = JSON.parse(scanraw).data.attributes.last_analysis_stats;
+        if (scan.malicious) {
+          await channel.send(
+            "<:bad:881629455964061717> Attachment sent by user <@!" +
+              msg.author.id +
+              "> is unsafe/malicious:\n" +
+              scanlink
           );
-          const analysis = nvt.sha256(
-            await util.promisify(fs.readFile)(attachments[i].filename)
-          );
-          const scanlink = "https://www.virustotal.com/gui/file/" + analysis;
-          const scanraw = await util.promisify(defaultTimedInstance.fileLookup)(
-            analysis
-          );
-          const scan = JSON.parse(scanraw).data.attributes.last_analysis_stats;
-          if (scan.malicious) {
+          if (!msg.deleted){
+            await msg.delete();
+          }
+          return;
+        } else if (scan.suspicious) {
+          if (msg.deleted){
             await channel.send(
-              "<:bad:881629455964061717> Attachment sent by user <@!" +
+              "<:warning:881629456039571537> Attachment sent by user <@!" +
                 msg.author.id +
-                "> is unsafe/malicious:\n" +
+                "> is suspicious:\n" +
                 scanlink
             );
-            await msg.delete();
-            return;
-          } else if (scan.suspicious && !issus) {
-            if (msg.deleted){
-              await channel.send(
-                "<:warning:881629456039571537> Attachment sent by user <@!" +
-                  msg.author.id +
-                  "> is suspicious:\n" +
-                  scanlink
-              );
-            } else {
-              await msg.reply(
-                "<:warning:881629456039571537> Attachment sent by user <@!" +
-                  msg.author.id +
-                  "> is suspicious:\n" +
-                  scanlink
-              );
-            }
-            issus = true;
+          } else {
+            await msg.reply(
+              "<:warning:881629456039571537> Attachment sent by user <@!" +
+                msg.author.id +
+                "> is suspicious:\n" +
+                scanlink
+            );
           }
+          issus = true;
         }
-        if (!issus) {
-          reaction.remove()
-          msg.react("<:good:881629715419516958>");
-        }
+      }))]);
+      if (!issus) {
+        reaction.remove()
+        msg.react("<:good:881629715419516958>");
       }
     }
   });

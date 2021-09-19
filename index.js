@@ -37,6 +37,10 @@ const fs = require("fs");
     store: new KeyvMySQL(process.env.MYSQL),
     namespace: "enableAntiwebhook",
   });
+  client.ipqsApikeys = new Keyv({
+    store: new KeyvMySQL(process.env.MYSQL),
+    namespace: "ipqsApikeys",
+  });
 
   await Promise.all(
     fs

@@ -154,7 +154,7 @@ module.exports = async (client) => {
           issus = true;
         }
       }))]);
-      if (!msg.deleted){
+      if (reaction && !msg.deleted){
         reaction.remove()
       }
       if (!issus) {

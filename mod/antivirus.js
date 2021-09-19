@@ -7,7 +7,8 @@ const fs = require("fs");
 
 module.exports = async (client) => {
   client.on("messageCreate", async (msg) => {
-    if (await client.virustotalApikeys.get(msg.guild.id)) {
+    if (msg.guild && await client.virustotalApikeys.get(msg.guild.id)) {
+      const channel = msg.channel;
       const defaultTimedInstance = nvt.makeAPI();
       defaultTimedInstance.setKey(
         await client.virustotalApikeys.get(msg.guild.id)
@@ -32,11 +33,9 @@ module.exports = async (client) => {
           }
         })
       );
-      var newmsg = null;
+      var reaction = null;
       if (urls.length || attachments.length) {
-        newmsg = await msg.reply(
-          "<a:analyzinga:881686382941179924> Scanning URLs and/or attachments..."
-        );
+        reaction = await msg.react("<a:analyzing:884596286039396432>");
       }
       var issus = false;
       for (var i = 0; i < urls.length; i++) {
@@ -54,8 +53,8 @@ module.exports = async (client) => {
             analysis.indexOf("-") + 1,
             analysis.lastIndexOf("-")
           );
-        if (scan.malicious) {
-          await newmsg.edit(
+        if (scan.malicious && scan.malicious > 2) {
+          await channel.send(
             "<:bad:881629455964061717> URL sent by user <@!" +
               msg.author.id +
               "> is unsafe/malicious:\n" +
@@ -63,17 +62,26 @@ module.exports = async (client) => {
           );
           await msg.delete();
           return;
-        } else if (scan.suspicious && !issus) {
-          await newmsg.edit(
+        } else if (!issus && ((scan.malicious && scan.malicious > 1) || (scan.malicious && scan.suspicious && (scan.malicious + scan.suspicious > 2)) || (scan.suspicious && scan.suspicious > 2))) {
+          if (msg.deleted){
+            await channel.send(
             "<:warning:881629456039571537> URL sent by user <@!" +
               msg.author.id +
               "> is suspicious:\n" +
               scanlink
-          );
+            );
+          } else {
+            await msg.reply(
+              "<:warning:881629456039571537> URL sent by user <@!" +
+                msg.author.id +
+                "> is suspicious:\n" +
+                scanlink
+            );
+          }
           issus = true;
         }
       }
-      if (newmsg && !issus) {
+      if ((urls.length || attachments.length) && !issus) {
         for (var i = 0; i < attachments.length; i++) {
           const fileraw = await util.promisify(defaultTimedInstance.uploadFile)(
             attachments[i].filename,
@@ -88,7 +96,7 @@ module.exports = async (client) => {
           );
           const scan = JSON.parse(scanraw).data.attributes.last_analysis_stats;
           if (scan.malicious) {
-            await newmsg.edit(
+            await channel.send(
               "<:bad:881629455964061717> Attachment sent by user <@!" +
                 msg.author.id +
                 "> is unsafe/malicious:\n" +
@@ -97,17 +105,27 @@ module.exports = async (client) => {
             await msg.delete();
             return;
           } else if (scan.suspicious && !issus) {
-            await newmsg.edit(
-              "<:warning:881629456039571537> Attachment sent by user <@!" +
-                msg.author.id +
-                "> is suspicious:\n" +
-                scanlink
-            );
+            if (msg.deleted){
+              await channel.send(
+                "<:warning:881629456039571537> Attachment sent by user <@!" +
+                  msg.author.id +
+                  "> is suspicious:\n" +
+                  scanlink
+              );
+            } else {
+              await msg.reply(
+                "<:warning:881629456039571537> Attachment sent by user <@!" +
+                  msg.author.id +
+                  "> is suspicious:\n" +
+                  scanlink
+              );
+            }
             issus = true;
           }
         }
         if (!issus) {
-          await newmsg.edit("<:good:881629715419516958> Message is safe!");
+          reaction.remove()
+          msg.react("<:good:881629715419516958>");
         }
       }
     }

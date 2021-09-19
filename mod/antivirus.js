@@ -20,7 +20,7 @@ module.exports = async (client) => {
         attachments = [];
         await Promise.all(
           msg.attachments.map(async (attachment) => {
-            if (attachment && attachment.proxyURL && (!attachment.contentType || attachment.contentType.startsWith("image") || attachment.contentType.startsWith("audio") || attachment.contentType.startsWith("video"))) {
+            if (attachment && attachment.proxyURL && (!attachment.contentType || (!attachment.contentType.startsWith("image") && !attachment.contentType.startsWith("audio") && !attachment.contentType.startsWith("video")))) {
               !fs.existsSync(`./assets/`) &&
                 fs.mkdirSync(`./assets/`, { recursive: true });
               var attpath = path.resolve("/tmp/cruiser/scan", attachment.name);

@@ -2,6 +2,7 @@ const getUrls = require("get-urls");
 const wget = require("node-wget-promise");
 const path = require("path");
 const util = require("util");
+const axios = require("axios");
 const nvt = require("node-virustotal");
 const fs = require("fs");
 
@@ -11,6 +12,8 @@ module.exports = async (client) => {
     var urls = null;
     var attachments = null;
     var channel = msg.channel;
+    var issus = false;
+    var author = msg.author;
     if (msg.guild && (await client.virustotalApikeys.get(msg.guild.id) || await client.ipqsApikeys.get(msg.guild.id))){
         urls = Array.from(getUrls(msg.content));
         attachments = [];
@@ -36,12 +39,34 @@ module.exports = async (client) => {
           reaction = await msg.react("<a:analyzing:884596286039396432>");
         }
     }
-    if (msg.guild && await client.virustotalApikeys.get(msg.guild.id)) {
+    if (msg.guild && await client.ipqsApikeys.get(msg.guild.id)){
+      await Promise.all(urls.map(async url => {
+        let ipqsRes = (await axios({
+          method: "GET",
+          url: `https://ipqualityscore.com/api/json/url/${await client.ipqsApikeys.get(msg.guild.id)}/${encodeURIComponent(url)}`
+        })).data;
+        if (!ipqsRes.success){
+          if (!msg.deleted){
+            await msg.reply(`<:warning:881629456039571537> Warning for message sent by <@!${author.id}>: IPQS Failed to scan URL:\n${ipqsRes.message}`)
+          } else {
+            await channel.send(`<:warning:881629456039571537> Warning for message sent by <@!${author.id}>: IPQS Failed to scan URL:\n${ipqsRes.message}`)
+          }
+          return;
+        }
+        if (ipqsRes.unsafe){
+          await channel.send(`<:bad:881629455964061717> URL sent by user <@!${author.id}> is unsafe/malicious (${ipqsRes.category})`);
+          if (!msg.deleted){
+            msg.delete();
+          }
+          issus = true;
+        }
+      }));
+    }
+    if (!msg.deleted && msg.guild && await client.virustotalApikeys.get(msg.guild.id)) {
       const defaultTimedInstance = nvt.makeAPI();
       defaultTimedInstance.setKey(
         await client.virustotalApikeys.get(msg.guild.id)
       );
-      var issus = false;
       await Promise.all([Promise.all(urls.map(async url => {
         const analysisraw = await util.promisify(
           defaultTimedInstance.initialScanURL
@@ -67,8 +92,8 @@ module.exports = async (client) => {
           if (!msg.deleted){
             await msg.delete();
           }
-          return;
-        } else if (!issus && ((scan.malicious && scan.malicious > 1) || (scan.malicious && scan.suspicious && (scan.malicious + scan.suspicious > 2)) || (scan.suspicious && scan.suspicious > 2))) {
+          issus = true;
+        } else if (((scan.malicious && scan.malicious > 1) || (scan.malicious && scan.suspicious && (scan.malicious + scan.suspicious > 2)) || (scan.suspicious && scan.suspicious > 2))) {
           if (msg.deleted){
             await channel.send(
             "<:warning:881629456039571537> URL sent by user <@!" +
@@ -109,7 +134,7 @@ module.exports = async (client) => {
           if (!msg.deleted){
             await msg.delete();
           }
-          return;
+          issus = true;
         } else if (scan.suspicious) {
           if (msg.deleted){
             await channel.send(
@@ -129,8 +154,10 @@ module.exports = async (client) => {
           issus = true;
         }
       }))]);
-      if (!issus) {
+      if (!msg.deleted){
         reaction.remove()
+      }
+      if (!issus) {
         msg.react("<:good:881629715419516958>");
       }
     }

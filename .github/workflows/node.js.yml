@@ -34,10 +34,10 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm i --package-lock-only
     - run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add .
-          git commit -m "Updated package-lock.json"
+          git config user.name github-actions || :
+          git config user.email github-actions@github.com || :
+          git add . || :
+          git commit -m "Updated package-lock.json" || :
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:

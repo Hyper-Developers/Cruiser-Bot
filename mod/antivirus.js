@@ -8,6 +8,7 @@ const fs = require("fs");
 
 module.exports = async (client) => {
   client.on("messageCreate", async (msg) => {
+    if (msg.author.id == client.user.id) return;
     var reaction = null;
     var urls = null;
     var attachments = null;

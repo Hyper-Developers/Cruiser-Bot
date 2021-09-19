@@ -26,7 +26,19 @@ jobs:
       uses: creyD/prettier_action@v4.0
       with:
         prettier_options: --write **/*.{js,md}
-        only_changed: true
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm i --package-lock-only
+    - run: |
+          git push
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "Updated package-lock.json"
+          git push
   build:
     needs: prettier
     runs-on: ubuntu-latest

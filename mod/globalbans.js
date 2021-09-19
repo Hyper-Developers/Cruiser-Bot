@@ -16,7 +16,7 @@ module.exports = async (client) => {
     let ksoftBanned = ksoftBanData && ksoftBanData.active;
     if (ksoftBanned) {
       await member.send({
-        content: "You are global banned by ksoft.si: " + ksoftBanData.banData,
+        content: "You are global banned by ksoft.si: " + ksoftBanData.banData.reason,
         components: [
           {
             type: "ACTION_ROW",
@@ -38,7 +38,7 @@ module.exports = async (client) => {
           },
         ],
       });
-      return member.kick("Ksoft.si: " + "TODO INSERT REASON HERE");
+      return member.kick("Ksoft.si: " + ksoftBanData.banData.reason);
     }
     let discordRepInfractionsData = null;
     if (await client.enableDrep.get(member.guild.id)) {

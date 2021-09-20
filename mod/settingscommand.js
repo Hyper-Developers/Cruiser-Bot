@@ -33,7 +33,7 @@ module.exports = async (client) => {
       drep: [client.enableDrep, interaction.guild.id, "enabled"],
       antibot: [client.enableAntibot, interaction.guild.id, "enabled"],
       antiwebhook: [client.enableAntiwebhook, interaction.guild.id, "enabled"],
-      ipqs: [client.ipqsApikeys, interaction.guild.id, "secret"]
+      ipqs: [client.ipqsApikeys, interaction.guild.id, "secret"],
     };
     const thesetting = settings[interaction.options.getSubcommand()];
     if (interaction.options.get(thesetting[2]) == null) {

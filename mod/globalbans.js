@@ -16,7 +16,8 @@ module.exports = async (client) => {
     let ksoftBanned = ksoftBanData && ksoftBanData.active;
     if (ksoftBanned) {
       await member.send({
-        content: "You are global banned by ksoft.si: " + ksoftBanData.banData.reason,
+        content:
+          "You are global banned by ksoft.si: " + ksoftBanData.banData.reason,
         components: [
           {
             type: "ACTION_ROW",

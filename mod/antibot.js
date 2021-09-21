@@ -7,7 +7,7 @@ module.exports = async (client) => {
       startedAt: typing.startedAt,
     });
   });
-  client.on("messageCreate", async (msg) => {
+  client.on("messageCreate", async msg => {
     if (
       msg.member &&
       !msg.member.bot &&
@@ -16,15 +16,15 @@ module.exports = async (client) => {
       let typing = typings[msg.user.id]
         ? typings[msg.user.id].filter((t) => t.channel == msg.channel.id)[0]
         : null;
+      typings[typing.user.id] = typings[typing.user.id]
+        ? typings[typing.user.id].filter((t) => t.channel != msg.channel.id)
+        : [];
       if (
         !typing ||
         typing.startedAt > new Date(Date.now() - msg.content.length / 10) ||
         msg.embeds
       )
         return msg.delete();
-      typings[typing.user.id] = typings[typing.user.id]
-        ? typings[typing.user.id].filter((t) => t.channel != msg.channel.id)
-        : [];
     }
   });
 };

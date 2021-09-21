@@ -13,11 +13,11 @@ module.exports = async (client) => {
       !msg.member.bot &&
       (await client.enableAntibot.get(msg.guild.id))
     ) {
-      let typing = typings[msg.user.id]
-        ? typings[msg.user.id].filter((t) => t.channel == msg.channel.id)[0]
+      let typing = typings[msg.member.id]
+        ? typings[msg.member.id].filter((t) => t.channel == msg.channel.id)[0]
         : null;
-      typings[typing.user.id] = typings[typing.user.id]
-        ? typings[typing.user.id].filter((t) => t.channel != msg.channel.id)
+      typings[msg.member.id] = typings[msg.member.id]
+        ? typings[msg.member.id].filter((t) => t.channel != msg.channel.id)
         : [];
       if (
         !typing ||

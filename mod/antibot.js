@@ -7,14 +7,14 @@ module.exports = async (client) => {
       startedAt: typing.startedAt,
     });
   });
-  client.on("messageCreate", async (msg) => {
+  client.on("messageCreate", async msg => {
     if (
       msg.member &&
       !msg.member.bot &&
       (await client.enableAntibot.get(msg.guild.id))
     ) {
       let typing = typings[msg.user.id]
-        ? typings[typing.user.id].filter((t) => t.channel == msg.channel.id)[0]
+        ? typings[msg.user.id].filter((t) => t.channel == msg.channel.id)[0]
         : null;
       if (
         !typing ||

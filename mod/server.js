@@ -8,13 +8,13 @@ module.exports = async (client) => {
 
   app.use(express.json());
 
-  app.get("/", (req, res) => {
+  app.get("/", async (req, res) => {
     res.send({
       success: true,
     });
   });
 
-  app.get("/authorized", (req, res) => {
+  app.get("/authorized", async (req, res) => {
     if (!req.body.code || !req.body.state) {
       res.status(400).send({
         success: false,

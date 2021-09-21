@@ -13,7 +13,7 @@ module.exports = async (client) => {
       !msg.member.bot &&
       (await client.enableAntibot.get(msg.guild.id))
     ) {
-      let typing = typings[typing.user.id]
+      let typing = typings[msg.user.id]
         ? typings[typing.user.id].filter((t) => t.channel == msg.channel.id)[0]
         : null;
       if (

@@ -1,7 +1,9 @@
 module.exports = async (client) => {
   client.on("interactionCreate", async (interaction) => {
     if (
-      !interaction.isCommand() || interaction.commandName != "cruiser" || interaction.options.getSubcommandGroup(false) != "settings"
+      !interaction.isCommand() ||
+      interaction.commandName != "cruiser" ||
+      interaction.options.getSubcommandGroup(false) != "settings"
     )
       return;
     if (

@@ -7,7 +7,7 @@ module.exports = async (client) => {
       startedAt: typing.startedAt,
     });
   });
-  client.on("messageCreate", async msg => {
+  client.on("messageCreate", async (msg) => {
     if (
       msg.member &&
       !msg.member.bot &&

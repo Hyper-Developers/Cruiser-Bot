@@ -23,12 +23,12 @@ module.exports = async (client) => {
       if (msg.embeds) return msg.delete();
       if (
         !typings[msg.member.id] &&
-        (!allowBypass || bypassUsed.indexOf(msg.author.id) < 0)
+        (!allowBypass || bypassUsed.indexOf(msg.author.id) >= 0)
       )
         return msg.delete();
       if (
         !typings[msg.member.id].some((t) => t.channel == msg.channel.id) &&
-        (!allowBypass || bypassUsed.indexOf(msg.member.id) < 0)
+        (!allowBypass || bypassUsed.indexOf(msg.member.id) >= 0)
       )
         return msg.delete();
       if (allowBypass) bypassUsed.push(msg.member.id);

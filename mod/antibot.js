@@ -11,7 +11,7 @@ module.exports = async (client) => {
     typings[typing.user.id].push({
       channel: typing.channel.id,
       startedAt: typing.startedAt,
-      startedTimestamp: typing.startedTimestamp
+      startedTimestamp: typing.startedTimestamp,
     });
   });
   client.on("messageCreate", async (msg) => {
@@ -21,10 +21,20 @@ module.exports = async (client) => {
       (await client.enableAntibot.get(msg.guild.id))
     ) {
       if (msg.embeds) return msg.delete();
-      if (!typings[msg.member.id] && (!allowBypass || bypassUsed.indexOf(msg.author.id) < 0)) return msg.delete();
-      if (!typings[msg.member.id].some((t) => t.channel == msg.channel.id) && (!allowBypass || bypassUsed.indexOf(msg.member.id) < 0)) return msg.delete();
+      if (
+        !typings[msg.member.id] &&
+        (!allowBypass || bypassUsed.indexOf(msg.author.id) < 0)
+      )
+        return msg.delete();
+      if (
+        !typings[msg.member.id].some((t) => t.channel == msg.channel.id) &&
+        (!allowBypass || bypassUsed.indexOf(msg.member.id) < 0)
+      )
+        return msg.delete();
       if (allowBypass) bypassUsed.push(msg.member.id);
-      typings[msg.member.id] = typings[msg.member.id].filter((t) => t.channel != msg.channel.id);
+      typings[msg.member.id] = typings[msg.member.id].filter(
+        (t) => t.channel != msg.channel.id
+      );
     }
   });
 };

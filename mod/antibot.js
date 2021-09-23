@@ -23,7 +23,7 @@ module.exports = async (client) => {
       !msg.activity &&
       (await client.enableAntibot.get(msg.guild.id))
     ) {
-      if (msg.embeds && msg.embeds.any((e) => e.type == "rich"))
+      if (msg.embeds && msg.embeds.some((e) => e.type == "rich"))
         return msg.delete();
       if (msg.nonce === null) return msg.delete();
       if (

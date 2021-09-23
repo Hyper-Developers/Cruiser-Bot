@@ -1,5 +1,6 @@
 const express = require("express");
 const axios = require("axios");
+var cors = require("cors");
 
 module.exports = async (client) => {
   const app = express();
@@ -7,6 +8,7 @@ module.exports = async (client) => {
   app.set("trust proxy", "loopback");
 
   app.use(express.json());
+  app.use(cors())
 
   app.get("/", async (req, res) => {
     res.send({

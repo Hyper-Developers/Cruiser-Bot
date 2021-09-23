@@ -17,7 +17,7 @@ module.exports = async (client) => {
   client.on("messageCreate", async (msg) => {
     if (
       msg.member &&
-      !msg.member.bot &&
+      !msg.member.user.bot &&
       !msg.attachments.size &&
       !msg.stickers.size &&
       !msg.activity &&

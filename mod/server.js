@@ -8,7 +8,7 @@ module.exports = async (client) => {
   app.set("trust proxy", "loopback");
 
   app.use(express.json());
-  app.use(cors())
+  app.use(cors());
 
   app.get("/", async (req, res) => {
     res.send({

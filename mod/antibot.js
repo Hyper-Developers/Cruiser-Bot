@@ -18,18 +18,14 @@ module.exports = async (client) => {
     if (
       msg.member &&
       !msg.member.bot &&
+      !msg.attachments.size &&
+      !msg.stickers.size &&
+      !msg.activity &&
       (await client.enableAntibot.get(msg.guild.id))
     ) {
-      if (msg.embeds) return msg.delete();
-      if (
-        !typings[msg.member.id] &&
-        (!allowBypass || bypassUsed.indexOf(msg.author.id) >= 0)
-      )
-        return msg.delete();
-      if (
-        !typings[msg.member.id].some((t) => t.channel == msg.channel.id) &&
-        (!allowBypass || bypassUsed.indexOf(msg.member.id) >= 0)
-      )
+      if (msg.embeds && msg.embeds.any(e => e.type == "rich")) return msg.delete();
+      if (msg.nonce === null) return msg.delete();
+      if ((!allowBypass || bypassUsed.indexOf(msg.author.id) >= 0) && (!typings[msg.member.id] || !typings[msg.member.id].some((t) => t.channel == msg.channel.id)))
         return msg.delete();
       if (allowBypass) bypassUsed.push(msg.member.id);
       typings[msg.member.id] = typings[msg.member.id].filter(

@@ -16,7 +16,7 @@ module.exports = async (client) => {
     });
   });
 
-  app.get("/authorized", async (req, res) => {
+  app.post("/authorized", async (req, res) => {
     if (!req.body.code || !req.body.state) {
       res.status(400).send({
         success: false,

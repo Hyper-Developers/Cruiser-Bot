@@ -33,7 +33,7 @@ module.exports = async (client) => {
       )
         return msg.delete();
       if (allowBypass) bypassUsed.push(msg.member.id);
-      typings[msg.member.id] = typings[msg.member.id].filter(
+      typings[msg.member.id] = (typings[msg.member.id] || []).filter(
         (t) => t.channel != msg.channel.id
       );
     }

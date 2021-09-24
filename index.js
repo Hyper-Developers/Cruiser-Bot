@@ -37,9 +37,21 @@ const fs = require("fs");
     store: new KeyvMySQL(process.env.MYSQL),
     namespace: "enableAntiwebhook",
   });
+  client.enableAntinuke = new Keyv({
+    store: new KeyvMySQL(process.env.MYSQL),
+    namespace: "enableAntinuke",
+  });
   client.ipqsApikeys = new Keyv({
     store: new KeyvMySQL(process.env.MYSQL),
     namespace: "ipqsApikeys",
+  });
+  client.antinukeTokens = new Keyv({
+    store: new KeyvMySQL(process.env.MYSQL),
+    namespace: "antinukeTokens",
+  });
+  client.informationTokens = new Keyv({
+    store: new KeyvMySQL(process.env.MYSQL),
+    namespace: "informationTokens",
   });
 
   await Promise.all(

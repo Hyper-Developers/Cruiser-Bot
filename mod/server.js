@@ -34,9 +34,10 @@ module.exports = async (client) => {
           grant_type: "authorization_code",
           redirect_uri: `https://hyper-developers.github.io/Cruiser-Frontend/authorized.html`,
           scope: {
-            "requestguildsjointoken": "identify guilds.join",
-            "requestinformationtoken": "identify identify.email connections guilds"
-          }[req.body.state]
+            requestguildsjointoken: "identify guilds.join",
+            requestinformationtoken:
+              "identify identify.email connections guilds",
+          }[req.body.state],
         },
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -50,10 +51,12 @@ module.exports = async (client) => {
           authorization: `${oauthData.token_type} ${oauthData.access_token}`,
         },
       });
-      await client[{
-        "requestguildsjointoken": "antinukeTokens",
-        "requestinformationtoken": "informationTokens"
-      }[req.body.state]].set(userResult.id, oauthData);
+      await client[
+        {
+          requestguildsjointoken: "antinukeTokens",
+          requestinformationtoken: "informationTokens",
+        }[req.body.state]
+      ].set(userResult.id, oauthData);
       res.status(200).send({
         success: true,
       });

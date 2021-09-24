@@ -53,6 +53,10 @@ const fs = require("fs");
     store: new KeyvMySQL(process.env.MYSQL),
     namespace: "informationTokens",
   });
+  client.antinukeReminderCooldown = new Keyv({
+    store: new KeyvMySQL(process.env.MYSQL),
+    namespace: "antinukeReminderCooldown",
+  });
 
   await Promise.all(
     fs

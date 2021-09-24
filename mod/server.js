@@ -33,7 +33,7 @@ module.exports = async (client) => {
           code: req.body.code,
           grant_type: "authorization_code",
           redirect_uri: `https://hyper-developers.github.io/Cruiser-Frontend/authorized.html`,
-          scope: "identify connections guilds guilds.join",
+          scope: "identify identify.email connections guilds guilds.join",
         },
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",

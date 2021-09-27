@@ -1,6 +1,6 @@
 require("dotenv").config();
 const Discord = require("discord.js");
-const Keyv = require("@keyvhq/keyv");
+const Keyv = require("@keyvhq/core");
 const KeyvMySQL = require("@keyvhq/mysql");
 const fs = require("fs");
 

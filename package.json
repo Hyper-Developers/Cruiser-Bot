@@ -14,6 +14,8 @@
     "node-virustotal": "^3.35.0",
     "node-wget-promise": "^0.1.6",
     "statcord.js": "^3.3.0",
-    "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "discord-backup": "^3.0.1",
+    "@androz2091/discord-invites-tracker": "^0.1.2"
   }
 }

@@ -48,8 +48,8 @@ module.exports = async (client) => {
           .map(
             (e, i, o) =>
               (i == o.length - 1
-                ? "<:Reply:1234>"
-                : "<:Reply_Continued:1234>") +
+                ? "<:Reply:892089083172630539>"
+                : "<:Reply_Continued:892089615484330014>") +
               " " +
               e
           )

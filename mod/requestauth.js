@@ -1,8 +1,8 @@
 module.exports = async (client) => {
   let sendReminder = async (member) => {
     if (
-      !(await client.enableAntinuke(member.guild.id)) ||
-      (await client.antinukeReminderCooldown(member.guild.id)) > Date.now()
+      !(await client.enableAntinuke.get(member.guild.id)) ||
+      (await client.antinukeReminderCooldown.get(member.guild.id)) > Date.now()
     )
       return;
     await member.send({

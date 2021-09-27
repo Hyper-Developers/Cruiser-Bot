@@ -53,7 +53,7 @@ module.exports = async (client) => {
               " " +
               e
           )
-          .join("\n");
+          .join("\n")+"\nGo to <https://github.com/Hyper-Developers/Cruiser-Frontend/wiki/Configuration-Tutorial> for more information.;
       return await interaction.reply({
         content: result,
         ephemeral: true,

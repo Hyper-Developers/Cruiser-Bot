@@ -1,10 +1,10 @@
-const utils = require("utils");
+const util = require("util");
 // A LOT OF CREDIT GOES TO https://github.com/TheShadowGamer/Invite-Manager
 module.exports = async (client) => {
   return; // disable while in development
   const guildInvites = {};
 
-  let sleep = utils.promisify(setTimeout);
+  let sleep = util.promisify(setTimeout);
 
   async function fetchInvites(guild) {
     let data = await Promise.all([

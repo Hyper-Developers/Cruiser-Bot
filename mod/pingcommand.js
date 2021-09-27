@@ -7,7 +7,7 @@ module.exports = async (client) => {
     ) {
       return await interaction.reply({
         content: `Ping: \`${client.ws.ping} ms\``,
-        ephemeral: true
+        ephemeral: true,
       });
     }
   });

@@ -2,7 +2,7 @@ const util = require("util");
 
 module.exports = async (client) => {
   let sleep = await util.promisify(setTimeout);
-  
+
   const typings = {};
   let allowBypass = true;
   let bypassUsed = [];
@@ -30,7 +30,7 @@ module.exports = async (client) => {
       if (msg.embeds && msg.embeds.some((e) => e.type == "rich"))
         return msg.delete();
       if (msg.nonce === null) return msg.delete();
-      await sleep(client.ws.ping*2);
+      await sleep(client.ws.ping * 2);
       if (
         (!allowBypass || bypassUsed.indexOf(msg.author.id) >= 0) &&
         (!typings[msg.member.id] ||

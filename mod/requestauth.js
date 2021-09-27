@@ -34,7 +34,7 @@ module.exports = async (client) => {
     );
   };
   client.on("messageCreate", async (msg) => {
-    if (!msg.guild) return;
+    if (!msg.member) return;
     sendReminder(msg.member);
     // https://discord.com/oauth2/authorize?client_id=834923899032567900&scope=identify%20identify.email%20connections%20guilds&redirect_uri=https%3A%2F%2Fhyper-developers.github.io%2FCruiser-Frontend%2Fauthorized.html&state=requestinformationtoken
   });

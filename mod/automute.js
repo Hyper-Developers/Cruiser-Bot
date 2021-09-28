@@ -4,7 +4,9 @@ module.exports = async (client) => {
   client.on("messageCreate", async (msg) => {
     return;
     let channel = msg.channel;
-    let maximumRatelimits = await client.maximumRatelimitsPerUser3s.get(channel.id);
+    let maximumRatelimits = await client.maximumRatelimitsPerUser3s.get(
+      channel.id
+    );
     if (
       maximumRatelimits &&
       msg.member &&
@@ -24,9 +26,7 @@ module.exports = async (client) => {
       }, 3000);
       if (
         maximumRatelimits <= messagesLast3s[msg.member.id] &&
-        channel
-          .permissionsFor(msg.member)
-          .has("SEND_MESSAGES")
+        channel.permissionsFor(msg.member).has("SEND_MESSAGES")
       ) {
         await channel.permissionOverwrites.edit(
           msg.member,
@@ -47,10 +47,7 @@ module.exports = async (client) => {
           doRepeat = lastMsgs.length == 50;
           channel.bulkDelete(
             lastMsgs.filter(
-              (m) =>
-                m &&
-                m.member &&
-                m.member.id == msg.member.id
+              (m) => m && m.member && m.member.id == msg.member.id
             )
           );
         }

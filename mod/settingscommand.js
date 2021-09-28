@@ -40,7 +40,11 @@ module.exports = async (client) => {
       antiwebhook: [client.enableAntiwebhook, interaction.guild.id, "enabled"],
       ipqs: [client.ipqsApikeys, interaction.guild.id, "secret"],
       antinuke: [client.enableAntinuke, interaction.guild.id, "enabled"],
-      invitetracking: [client.enableInvitetracking, interaction.guild.id, "enabled"],
+      invitetracking: [
+        client.enableInvitetracking,
+        interaction.guild.id,
+        "enabled",
+      ],
       antiabuse: [client.enableAntiabuse, interaction.guild.id, "enabled"],
     };
     const thesetting = settings[interaction.options.getSubcommand()];

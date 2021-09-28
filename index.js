@@ -17,6 +17,10 @@ const fs = require("fs");
     store: new KeyvMySQL(process.env.MYSQL),
     namespace: "maximumRatelimits3s",
   });
+  client.maximumRatelimitsPerUser3s = new Keyv({
+    store: new KeyvMySQL(process.env.MYSQL),
+    namespace: "maximumRatelimitsPerUser3s",
+  });
   client.virustotalApikeys = new Keyv({
     store: new KeyvMySQL(process.env.MYSQL),
     namespace: "virustotalApikeys",
@@ -44,6 +48,18 @@ const fs = require("fs");
   client.ipqsApikeys = new Keyv({
     store: new KeyvMySQL(process.env.MYSQL),
     namespace: "ipqsApikeys",
+  });
+  client.enableInvitetracking = new Keyv({
+    store: new KeyvMySQL(process.env.MYSQL),
+    namespace: "enableInvitetracking",
+  });
+  client.enableAntiabuse = new Keyv({
+    store: new KeyvMySQL(process.env.MYSQL),
+    namespace: "enableAntiabuse",
+  });
+  client.invitesUsed = new Keyv({
+    store: new KeyvMySQL(process.env.MYSQL),
+    namespace: "invitesUsed",
   });
   client.antinukeTokens = new Keyv({
     store: new KeyvMySQL(process.env.MYSQL),

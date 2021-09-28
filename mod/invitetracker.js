@@ -6,7 +6,7 @@ module.exports = async (client) => {
     fetchVanity: true,
     fetchAuditLogs: true,
   });
-  tracker.on("guildMemberAdd", (member, type, invite) => {
+  tracker.on("guildMemberAdd", async (member, type, invite) => {
     if (!(await client.enableInvitetracking.get(member.guild.id))) return;
     if (!(await client.invitesUsed.get(member.guild.id))) {
       await client.invitesUsed.set(member.guild.id, {});

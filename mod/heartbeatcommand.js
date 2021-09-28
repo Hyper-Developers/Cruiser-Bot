@@ -43,7 +43,7 @@ module.exports = async (client) => {
         });
       let result =
         "<:warning:881629456039571537> There are potential issues with your configuration:\n" +
-        guildWarnsEnabled
+        guildWarns
           .filter((e, i) => guildWarnsEnabled[i])
           .map(
             (e, i, o) =>

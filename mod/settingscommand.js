@@ -21,17 +21,17 @@ module.exports = async (client) => {
       autoslowmode: [
         client.targetRatelimits60s,
         interaction.channel.id,
-        "target"
+        "target",
       ],
       autolockdown: [
         client.maximumRatelimits3s,
         interaction.channel.id,
-        "threshold"
+        "threshold",
       ],
       automute: [
         client.maximumRatelimitsPerUser3s,
         interaction.channel.id,
-        "threshold"
+        "threshold",
       ],
       virustotal: [client.virustotalApikeys, interaction.guild.id, "apikey"],
       ksoft: [client.enableKsoft, interaction.guild.id, "enabled"],
@@ -43,7 +43,7 @@ module.exports = async (client) => {
       invitetracking: [
         client.enableInvitetracking,
         interaction.guild.id,
-        "enabled"
+        "enabled",
       ],
       antiabuse: [client.enableAntiabuse, interaction.guild.id, "enabled"],
     };

@@ -44,7 +44,7 @@ module.exports = async (client) => {
     });
   });
   client.on("roleUpdate", async (oldRole, role) => {
-    if (!(await client.enableInvitetracking.get(role.guild.id))) return;
+    if (!(await client.enableAntiabuse.get(role.guild.id))) return;
     if (role.members.length / role.guild.members.length < 0.2) return;
     let newperms = role.permissions;
     await Promise.all(

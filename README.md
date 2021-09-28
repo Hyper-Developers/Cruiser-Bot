@@ -17,8 +17,8 @@ Cruiser is a powerful anti-raid discord bot.
 ## List of planned features
 
 - [ ] Backups
-- [ ] Invite Link Tracking
-- [ ] Abuse Detector
+- [x] Invite Link Tracking
+- [x] Abuse Detector
 - [ ] Automatic Un-Nuker
 - [ ] Smart Suspicious Account Detector
 - [ ] "I'm not a robot" Verification

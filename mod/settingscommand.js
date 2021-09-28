@@ -28,12 +28,20 @@ module.exports = async (client) => {
         interaction.channel.id,
         "threshold",
       ],
+      automute: [
+        client.maximumRatelimitsPerUser3s,
+        interaction.channel.id,
+        "threshold",
+      ],
       virustotal: [client.virustotalApikeys, interaction.guild.id, "apikey"],
       ksoft: [client.enableKsoft, interaction.guild.id, "enabled"],
       drep: [client.enableDrep, interaction.guild.id, "enabled"],
       antibot: [client.enableAntibot, interaction.guild.id, "enabled"],
       antiwebhook: [client.enableAntiwebhook, interaction.guild.id, "enabled"],
       ipqs: [client.ipqsApikeys, interaction.guild.id, "secret"],
+      antinuke: [client.enableAntinuke, interaction.guild.id, "enabled"],
+      invitetracking: [client.enableInvitetracking, interaction.guild.id, "enabled"],
+      antiabuse: [client.enableAntiabuse, interaction.guild.id, "enabled"],
     };
     const thesetting = settings[interaction.options.getSubcommand()];
     if (interaction.options.get(thesetting[2]) == null) {

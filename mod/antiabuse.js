@@ -22,19 +22,24 @@ module.exports = async (client) => {
     "MANAGE_EMOJIS_AND_STICKERS",
     "MANAGE_THREADS",
     "USE_PUBLIC_THREADS",
-    "USE_PRIVATE_THREADS"
+    "USE_PRIVATE_THREADS",
   ];
-  client.on("guildCreate", async guild => {
-    guild.roles.cache.forEach(async role => {
+  client.on("guildCreate", async (guild) => {
+    guild.roles.cache.forEach(async (role) => {
       if (role.members.length / role.guild.members.length < 0.2) return;
       let newperms = role.permissions;
-      await Promise.all(modperms.map(async perm => {
-        if (role.permissions.has(perm, false)){
-          newperms = newperms.remove(perm);
-        }
-      }));
+      await Promise.all(
+        modperms.map(async (perm) => {
+          if (role.permissions.has(perm, false)) {
+            newperms = newperms.remove(perm);
+          }
+        })
+      );
       if (!role.permissions.has(newperms)) {
-        await role.setPermissions(newperms, "Removed abusable permissions from presumed public role");
+        await role.setPermissions(
+          newperms,
+          "Removed abusable permissions from presumed public role"
+        );
       }
     });
   });
@@ -42,11 +47,16 @@ module.exports = async (client) => {
     return;
     if (role.members.length / role.guild.members.length < 0.2) return;
     let newperms = role.permissions;
-    await Promise.all(modperms.map(async perm => {
-      if (!oldRole.permissions.has(perm, false) && role.permissions.has(perm, false)){
-        newperms = newperms.remove(perm);
-      }
-    }));
+    await Promise.all(
+      modperms.map(async (perm) => {
+        if (
+          !oldRole.permissions.has(perm, false) &&
+          role.permissions.has(perm, false)
+        ) {
+          newperms = newperms.remove(perm);
+        }
+      })
+    );
     if (!role.permissions.has(newperms)) {
       await role.setPermissions(newperms, "Anti-Abuse triggered");
     }

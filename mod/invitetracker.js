@@ -1,7 +1,6 @@
 const InvitesTracker = require("@androz2091/discord-invites-tracker");
 // A LOT OF CREDIT GOES TO https://github.com/TheShadowGamer/Invite-Manager
 module.exports = async (client) => {
-  return; // Disable invite tracker while https://github.com/Androz2091/discord-invites-tracker/issues/4
   const tracker = InvitesTracker.init(client, {
     fetchGuilds: true,
     fetchVanity: true,

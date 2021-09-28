@@ -8,7 +8,7 @@ module.exports = async (client) => {
   });
   tracker.on("guildMemberAdd", (member, type, invite) => {
     if (!(await client.enableInvitetracking.get(member.guild.id))) return;
-    if (!(await client.invitesUsed.get(member.guild.id))){
+    if (!(await client.invitesUsed.get(member.guild.id))) {
       await client.invitesUsed.set(member.guild.id, {});
     }
     let invitesUsed = await client.invitesUsed.get(member.guild.id);
@@ -19,25 +19,25 @@ module.exports = async (client) => {
         invite: {
           code: invite.code,
           inviter: invite.inviter.id,
-        }
+        },
       };
     } else if (type === "vanity") {
       invitesUsed[member.id] = {
         version: 1,
         type: "invite_vanity",
         invite: {
-          code: member.guild.vanityURLCode
-        }
+          code: member.guild.vanityURLCode,
+        },
       };
     } else if (type === "unknown") {
       invitesUsed[member.id] = {
         version: 1,
-        type: "unknown"
+        type: "unknown",
       };
     } else if (type === "permissions") {
       invitesUsed[member.id] = {
         version: 1,
-        type: "unknown_permissions"
+        type: "unknown_permissions",
       };
     }
     await client.invitesUsed.set(member.guild.id, invitesUsed);

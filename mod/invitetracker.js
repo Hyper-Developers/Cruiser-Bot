@@ -1,6 +1,7 @@
 const InvitesTracker = require("@androz2091/discord-invites-tracker");
 // A LOT OF CREDIT GOES TO https://github.com/TheShadowGamer/Invite-Manager
 module.exports = async (client) => {
+  return;
   const tracker = InvitesTracker.init(client, {
     fetchGuilds: true,
     fetchVanity: true,

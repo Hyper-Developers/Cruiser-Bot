@@ -4,9 +4,9 @@ module.exports = async (client) => {
       if (
         msg.mentions.everyone ||
         msg.mentions.roles.filter(
-          (r) => r.members.length / r.guild.members.length > 0.2
-        ) ||
-        msg.mentions.users.length > 5
+          (r) => r.members.size / r.guild.members.size > 0.2
+        ).size > 0 ||
+        msg.mentions.users.size > 5
       ) {
         try {
           await (await msg.fetchWebhook()).delete();

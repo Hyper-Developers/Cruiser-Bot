@@ -30,8 +30,8 @@ jobs:
       run: npm i --package-lock-only
     - name: Commit new package-lock.json
       run: |
-          git config user.name github-actions || :
-          git config user.email github-actions@github.com || :
+          git config user.name actions-user || :
+          git config user.email actions-user@github.com || :
           git add . || :
           git commit -m "Updated package-lock.json" || :
     - name: Push changes

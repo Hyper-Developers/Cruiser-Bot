@@ -1,7 +1,6 @@
 const backup = require("discord-backup");
 
 module.exports = async (client) => {
-  return; // Disable in development
   client.on("interactionCreate", async (interaction) => {
     if (
       !interaction.isCommand() ||

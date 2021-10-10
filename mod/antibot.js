@@ -38,7 +38,7 @@ module.exports = async (client) => {
       )
         return msg.delete();
       if (allowBypass) bypassUsed.push(msg.member.id);
-      if (!typings[msg.member.id]){
+      if (!typings[msg.member.id]) {
         typings[msg.member.id] = [];
         return;
       }

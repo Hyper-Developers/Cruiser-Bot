@@ -43,9 +43,10 @@ module.exports = async (client) => {
         typings[msg.member.id] = [];
         return;
       }
-      if (typings[msg.member.id].filter(
-        (t) => t.channel != msg.channel.id
-      ).length == 0)
+      if (
+        typings[msg.member.id].filter((t) => t.channel != msg.channel.id)
+          .length == 0
+      )
         return;
       let firstTimestamp = (typings[msg.member.id] || []).filter(
         (t) => t.channel != msg.channel.id

@@ -26,45 +26,31 @@ module.exports = async (client) => {
     });
   });
   return;
-  const tracker = InvitesTracker.init(client, {
-    fetchGuilds: true,
-    fetchVanity: true,
-    fetchAuditLogs: true,
+  const invites = {};
+  client.on('ready', async () => {
+    await client.guilds.fetch();
+    client.guilds.cache.forEach(async g => {
+      const guildInvites = await g.fetchInvites();
+      invites[g.id] = guildInvites;
+    });
   });
-  tracker.on("guildMemberAdd", async (member, type, invite) => {
-    if (!(await client.enableInvitetracking.get(member.guild.id))) return;
-    if (!(await client.invitesUsed.get(member.guild.id))) {
-      await client.invitesUsed.set(member.guild.id, {});
-    }
-    let invitesUsed = await client.invitesUsed.get(member.guild.id);
-    if (type === "normal") {
-      invitesUsed[member.id] = {
-        version: 1,
-        type: "invite",
-        invite: {
-          code: invite.code,
-          inviter: invite.inviter.id,
-        },
-      };
-    } else if (type === "vanity") {
-      invitesUsed[member.id] = {
-        version: 1,
-        type: "invite_vanity",
-        invite: {
-          code: member.guild.vanityURLCode,
-        },
-      };
-    } else if (type === "unknown") {
-      invitesUsed[member.id] = {
-        version: 1,
-        type: "unknown",
-      };
-    } else if (type === "permissions") {
-      invitesUsed[member.id] = {
-        version: 1,
-        type: "unknown_permissions",
-      };
-    }
-    await client.invitesUsed.set(member.guild.id, invitesUsed);
+  client.on('inviteCreate', invite => {
+    const guildInvites = await invite.guild.fetchInvites();
+    invites[guild.id] = guildInvites;
+  });
+  client.on('inviteDelete', invite => {
+    const guildInvites = await invite.guild.fetchInvites();
+    invites[guild.id] = guildInvites;
+  });
+  client.on('guildCreate', invite => {
+    const guildInvites = await invite.guild.fetchInvites();
+    invites[guild.id] = guildInvites;
+  });
+  client.on('guildMemberAdd', await member => {
+    const guildInvites = await member.guild.fetchInvites();
+    const ei = invites[member.guild.id];
+    invites[member.guild.id] = guildInvites;
+    const invite = guildInvites.find(i => ei.get(i.code).uses < i.uses);
+    const inviter = client.users.cache.get(invite.inviter.id);
   });
 };

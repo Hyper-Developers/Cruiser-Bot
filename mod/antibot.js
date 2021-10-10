@@ -34,7 +34,8 @@ module.exports = async (client) => {
       if (
         (!allowBypass || bypassUsed.indexOf(msg.author.id) >= 0) &&
         (!typings[msg.member.id] ||
-          !typings[msg.member.id].some((t) => t.channel == msg.channel.id))
+          !typings[msg.member.id].some((t) => t.channel == msg.channel.id)) &&
+        msg.content.length >= 10 // Discord doesn't send typing until like 2 seconds
       )
         return msg.delete();
       if (allowBypass) bypassUsed.push(msg.member.id);
@@ -42,6 +43,10 @@ module.exports = async (client) => {
         typings[msg.member.id] = [];
         return;
       }
+      if (typings[msg.member.id].filter(
+        (t) => t.channel != msg.channel.id
+      ).length == 0)
+        return;
       let firstTimestamp = (typings[msg.member.id] || []).filter(
         (t) => t.channel != msg.channel.id
       )[0];

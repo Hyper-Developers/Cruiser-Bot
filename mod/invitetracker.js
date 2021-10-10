@@ -25,7 +25,6 @@ module.exports = async (client) => {
       ephemeral: true,
     });
   });
-  return;
   const tracker = InvitesTracker.init(client, {
     fetchGuilds: true,
     fetchVanity: true,

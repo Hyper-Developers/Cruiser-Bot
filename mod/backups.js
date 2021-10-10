@@ -5,7 +5,7 @@ module.exports = async (client) => {
     if (
       !interaction.isCommand() ||
       interaction.commandName != "cruiser" ||
-      interaction.options.getSubcommandGroup(false) != "backup"
+      interaction.options.getSubcommandGroup(false) != "backups"
     )
       return;
     if (

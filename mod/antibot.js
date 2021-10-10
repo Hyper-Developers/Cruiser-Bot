@@ -38,8 +38,15 @@ module.exports = async (client) => {
       )
         return msg.delete();
       if (allowBypass) bypassUsed.push(msg.member.id);
-      typings[msg.member.id] = (typings[msg.member.id] || []).filter(
+      if (!typings[msg.member.id]){
+        typings[msg.member.id] = [];
+        return;
+      }
+      let firstTimestamp = (typings[msg.member.id] || []).filter(
         (t) => t.channel != msg.channel.id
+      )[0];
+      typings[msg.member.id] = (typings[msg.member.id] || []).filter(
+        (t) => t.startedTimestamp == firstTimestamp
       );
     }
   });

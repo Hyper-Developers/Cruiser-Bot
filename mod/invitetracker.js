@@ -1,6 +1,3 @@
-const InvitesTracker = require("@androz2091/discord-invites-tracker");
-// A LOT OF CREDIT GOES TO https://github.com/TheShadowGamer/Invite-Manager
-
 module.exports = async (client) => {
   client.on("interactionCreate", async (interaction) => {
     if (
@@ -34,19 +31,19 @@ module.exports = async (client) => {
       invites[g.id] = guildInvites;
     });
   });
-  client.on('inviteCreate', invite => {
+  client.on('inviteCreate', async invite => {
     const guildInvites = await invite.guild.fetchInvites();
     invites[guild.id] = guildInvites;
   });
-  client.on('inviteDelete', invite => {
+  client.on('inviteDelete', async invite => {
     const guildInvites = await invite.guild.fetchInvites();
     invites[guild.id] = guildInvites;
   });
-  client.on('guildCreate', invite => {
+  client.on('guildCreate', async invite => {
     const guildInvites = await invite.guild.fetchInvites();
     invites[guild.id] = guildInvites;
   });
-  client.on('guildMemberAdd', await member => {
+  client.on('guildMemberAdd', async member => {
     const guildInvites = await member.guild.fetchInvites();
     const ei = invites[member.guild.id];
     invites[member.guild.id] = guildInvites;

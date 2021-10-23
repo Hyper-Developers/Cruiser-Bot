@@ -60,14 +60,12 @@ module.exports = async (client) => {
     if (!role.permissions.has(newperms)) {
       await role.setPermissions(newperms, "Anti-Abuse triggered");
       let logChannel = await client.channels
-        .fetch(await client.antiAbuseLogChannel.get(msg.guild.id))
+        .fetch(await client.antiAbuseLogChannel.get(role.guild.id))
         .catch((e) => {
           return null;
         });
       if (logChannel)
-        await logChannel.send(
-          `<:bad:881629455964061717> Removed abusable permissions from presumed public role`
-        );
+        await logChannel.send(`<:bad:881629455964061717> Removed abusable permissions from presumed public role`);
     }
   });
 };

@@ -89,6 +89,10 @@ const fs = require("fs");
     store: new KeyvMySQL(process.env.MYSQL),
     namespace: "antiScamLogChannel",
   });
+  client.antiBotChannel = new Keyv({
+    store: new KeyvMySQL(process.env.MYSQL),
+    namespace: "antiBotChannel",
+  });
   client.backupsLogChannel = new Keyv({
     store: new KeyvMySQL(process.env.MYSQL),
     namespace: "backupsLogChannel",

@@ -32,8 +32,8 @@ module.exports = async (client) => {
                 !attachment.contentType.startsWith("audio") &&
                 !attachment.contentType.startsWith("video")))
           ) {
-            if (!fs.existsSync("/tmp/cruiser/scan")){
-                fs.mkdirSync("/tmp/cruiser/scan", { recursive: true });
+            if (!fs.existsSync("/tmp/cruiser/scan")) {
+              fs.mkdirSync("/tmp/cruiser/scan", { recursive: true });
             }
             var attpath = path.resolve("/tmp/cruiser/scan", attachment.name);
             await wget(attachment.url, {

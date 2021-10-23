@@ -15,6 +15,9 @@ module.exports = async (client) => {
     var channel = msg.channel;
     var issus = false;
     var author = msg.author;
+    let logChannel = await client.channels.fetch(await client.joinleaveLogChannel.get(member.guild.id)).catch(e => {
+      return null;
+    });
     if (
       msg.guild &&
       ((await client.virustotalApikeys.get(msg.guild.id)) ||
@@ -74,6 +77,9 @@ module.exports = async (client) => {
                 `<:warning:881629456039571537> Warning for message sent by <@!${author.id}>: IPQS Failed to scan URL:\n${ipqsRes.message}`
               );
             }
+            await logChannel.send(
+              `<:warning:881629456039571537> Warning for message sent by <@!${author.id}> in <#${msg.channel.id}>: IPQS Failed to scan URL:\n${ipqsRes.message}`
+            );
             return;
           }
           if (ipqsRes.unsafe) {
@@ -83,6 +89,9 @@ module.exports = async (client) => {
             if (!msg.deleted) {
               msg.delete();
             }
+            await logChannel.send(
+              `<:bad:881629455964061717> URL sent by user <@!${author.id}> in <#${msg.channel.id}> is unsafe/malicious (${ipqsRes.category})`
+            );
             issus = true;
           }
         })
@@ -121,6 +130,12 @@ module.exports = async (client) => {
                   "> is unsafe/malicious:\n" +
                   scanlink
               );
+              await logChannel.send(
+                "<:bad:881629455964061717> URL sent by user <@!" +
+                  msg.author.id +
+                  "> in <#"+msg.channel.id+"> is unsafe/malicious:\n" +
+                  scanlink
+              );
               if (!msg.deleted) {
                 await msg.delete();
               }
@@ -147,6 +162,12 @@ module.exports = async (client) => {
                     scanlink
                 );
               }
+              await logChannel.send(
+                "<:warning:881629456039571537> URL sent by user <@!" +
+                  msg.author.id +
+                  "> in <#"+msg.channel.id+"> is suspicious:\n" +
+                  scanlink
+              );
               issus = true;
             }
           })
@@ -172,6 +193,12 @@ module.exports = async (client) => {
                   "> is unsafe/malicious:\n" +
                   scanlink
               );
+              await logChannel.send(
+                "<:bad:881629455964061717> Attachment sent by user <@!" +
+                  msg.author.id +
+                  "> in <#"+msg.channel.id+"> is unsafe/malicious:\n" +
+                  scanlink
+              );
               if (!msg.deleted) {
                 await msg.delete();
               }
@@ -192,6 +219,12 @@ module.exports = async (client) => {
                     scanlink
                 );
               }
+              await logChannel.send(
+                "<:warning:881629456039571537> Attachment sent by user <@!" +
+                  msg.author.id +
+                  "> in <#"+msg.channel.id+"> is suspicious:\n" +
+                  scanlink
+              );
               issus = true;
             }
           })

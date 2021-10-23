@@ -32,12 +32,16 @@ module.exports = async (client) => {
         .catch((e) => {
           return null;
         });
-      if (msg.embeds && msg.embeds.some((e) => e.type == "rich")){
-        await logChannel.send(`<:bad:881629455964061717> <@!${msg.member.id}> sent a rich embed in <#${msg.channel.id}>`);
+      if (msg.embeds && msg.embeds.some((e) => e.type == "rich")) {
+        await logChannel.send(
+          `<:bad:881629455964061717> <@!${msg.member.id}> sent a rich embed in <#${msg.channel.id}>`
+        );
         return msg.delete();
       }
-      if (msg.nonce === null){
-        await logChannel.send(`<:bad:881629455964061717> <@!${msg.member.id}> sent a message without a nonce in <#${msg.channel.id}>`);
+      if (msg.nonce === null) {
+        await logChannel.send(
+          `<:bad:881629455964061717> <@!${msg.member.id}> sent a message without a nonce in <#${msg.channel.id}>`
+        );
         return msg.delete();
       }
       await sleep(client.ws.ping * 4);
@@ -46,8 +50,10 @@ module.exports = async (client) => {
         (!typings[msg.member.id] ||
           !typings[msg.member.id].some((t) => t.channel == msg.channel.id)) &&
         msg.content.length >= 10 // Discord doesn't send typing until like 2 seconds
-      ){
-        await logChannel.send(`<:bad:881629455964061717> <@!${msg.member.id}> sent a message without typing in <#${msg.channel.id}>`);
+      ) {
+        await logChannel.send(
+          `<:bad:881629455964061717> <@!${msg.member.id}> sent a message without typing in <#${msg.channel.id}>`
+        );
         return msg.delete();
       }
       if (allowBypass) bypassUsed.push(msg.member.id);

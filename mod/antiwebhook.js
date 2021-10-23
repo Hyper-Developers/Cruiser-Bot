@@ -16,7 +16,9 @@ module.exports = async (client) => {
             });
           await (await msg.fetchWebhook()).delete();
           if (logChannel)
-            await logChannel.send(`<:bad:881629455964061717> Deleted abusive webhook.`);
+            await logChannel.send(
+              `<:bad:881629455964061717> Deleted abusive webhook.`
+            );
         } catch {}
       }
     }

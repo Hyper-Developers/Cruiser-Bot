@@ -16,7 +16,7 @@ module.exports = async (client) => {
     var issus = false;
     var author = msg.author;
     let logChannel = await client.channels
-      .fetch(await client.joinleaveLogChannel.get(member.guild.id))
+      .fetch(await client.antiScamLogChannel.get(msg.guild.id))
       .catch((e) => {
         return null;
       });

@@ -65,7 +65,9 @@ module.exports = async (client) => {
           return null;
         });
       if (logChannel)
-        await logChannel.send(`<:bad:881629455964061717> Removed abusable permissions from presumed public role`);
+        await logChannel.send(
+          `<:bad:881629455964061717> Removed abusable permissions from presumed public role`
+        );
     }
   });
 };

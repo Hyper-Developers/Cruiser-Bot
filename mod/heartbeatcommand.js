@@ -16,6 +16,13 @@ module.exports = async (client) => {
           content: "You do not have the ADMINISTRATOR permission!",
           ephemeral: true,
         });
+      if (
+        !interaction.guild.me.permissions.has("ADMINISTRATOR")
+      )
+        return await interaction.reply({
+          content: "<:bad:881629455964061717> There is a major issue with your configuration:\n<:Reply:892089083172630539> <@!834923899032567900> does not have Administrator permission. This is needed so that <@!834923899032567900> can manage all <:member:901459666716991499> members, <:channel:901459667002224710> channels, and <:role:901459667077718036> roles.",
+          ephemeral: true,
+        });
       let guildWarns = [
         "VirusTotal Anti-Virus and Anti-Scam is disabled.",
         "IPQualityScore Anti-Scam is disabled.",

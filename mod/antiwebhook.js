@@ -9,7 +9,14 @@ module.exports = async (client) => {
         msg.mentions.users.size > 5
       ) {
         try {
+          let logChannel = await client.channels
+            .fetch(await client.antiAbuseLogChannel.get(msg.guild.id))
+            .catch((e) => {
+              return null;
+            });
           await (await msg.fetchWebhook()).delete();
+          if (logChannel)
+            await logChannel.send(`<:bad:881629455964061717> Deleted abusive webhook.`);
         } catch {}
       }
     }

@@ -73,6 +73,30 @@ const fs = require("fs");
     store: new KeyvMySQL(process.env.MYSQL),
     namespace: "antinukeReminderCooldown",
   });
+  client.auditLogChannel = new Keyv({
+    store: new KeyvMySQL(process.env.MYSQL),
+    namespace: "auditLogChannel",
+  });
+  client.configLogChannel = new Keyv({
+    store: new KeyvMySQL(process.env.MYSQL),
+    namespace: "configLogChannel",
+  });
+  client.antiAbuseLogChannel = new Keyv({
+    store: new KeyvMySQL(process.env.MYSQL),
+    namespace: "antiAbuseLogChannel",
+  });
+  client.antiScamLogChannel = new Keyv({
+    store: new KeyvMySQL(process.env.MYSQL),
+    namespace: "antiScamLogChannel",
+  });
+  client.backupsLogChannel = new Keyv({
+    store: new KeyvMySQL(process.env.MYSQL),
+    namespace: "backupsLogChannel",
+  });
+  client.joinleaveLogChannel = new Keyv({
+    store: new KeyvMySQL(process.env.MYSQL),
+    namespace: "joinleaveLogChannel",
+  });
 
   await Promise.all(
     fs

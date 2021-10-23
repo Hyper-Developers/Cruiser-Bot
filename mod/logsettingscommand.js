@@ -10,7 +10,8 @@ module.exports = async (client) => {
       !interaction.member ||
       !(
         interaction.member.id == interaction.guild.ownerId ||
-        (interaction.member.permissions.has("MANAGE_CHANNELS") && interaction.member.permissions.has("VIEW_AUDIT_LOG"))
+        (interaction.member.permissions.has("MANAGE_CHANNELS") &&
+          interaction.member.permissions.has("VIEW_AUDIT_LOG"))
       )
     )
       return await interaction.reply({
@@ -18,7 +19,10 @@ module.exports = async (client) => {
         ephemeral: true,
       });
     const thesetting = client[interaction.options.getString("type")];
-    if (interaction.options.getChannel("channel") == null || interaction.options.getChannel("channel").type != "GUILD_TEXT") {
+    if (
+      interaction.options.getChannel("channel") == null ||
+      interaction.options.getChannel("channel").type != "GUILD_TEXT"
+    ) {
       await thesetting.delete(interaction.guild.id);
       return await interaction.reply({
         content:

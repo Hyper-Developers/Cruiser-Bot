@@ -2,9 +2,11 @@ const axios = require("axios");
 
 module.exports = async (client) => {
   client.on("guildMemberAdd", async (member) => {
-    let logChannel = await client.channels.fetch(await client.joinleaveLogChannel.get(member.guild.id)).catch(e => {
-      return null;
-    });
+    let logChannel = await client.channels
+      .fetch(await client.joinleaveLogChannel.get(member.guild.id))
+      .catch((e) => {
+        return null;
+      });
     let ksoftBanData = null;
     if (await client.enableKsoft.get(member.guild.id)) {
       try {
@@ -42,7 +44,15 @@ module.exports = async (client) => {
           },
         ],
       });
-      await logChannel.send(`<:bad:881629455964061717> Member \`${member.user.tag.replaceAll("`", "\`")}\` is global banned by <:ksoft:901516737198055485> Ksoft.si:\n\`\`\`${ksoftBanData.banData.reason.replaceAll("`", "\`")}\`\`\``);
+      await logChannel.send(
+        `<:bad:881629455964061717> Member \`${member.user.tag.replaceAll(
+          "`",
+          "`"
+        )}\` is global banned by <:ksoft:901516737198055485> Ksoft.si:\n\`\`\`${ksoftBanData.banData.reason.replaceAll(
+          "`",
+          "`"
+        )}\`\`\``
+      );
       return member.kick("Ksoft.si: " + ksoftBanData.banData.reason);
     }
     let discordRepInfractionsData = null;
@@ -90,9 +100,22 @@ module.exports = async (client) => {
           },
         ],
       });
-      await logChannel.send(`<:bad:881629455964061717> Member \`${member.user.tag.replaceAll("`", "\`")}\` is global banned by <:DR:901516919243415603> DiscordRep:\n\`\`\`${discordRepInfractionsData.reason.replaceAll("`", "\`")}\`\`\``);
+      await logChannel.send(
+        `<:bad:881629455964061717> Member \`${member.user.tag.replaceAll(
+          "`",
+          "`"
+        )}\` is global banned by <:DR:901516919243415603> DiscordRep:\n\`\`\`${discordRepInfractionsData.reason.replaceAll(
+          "`",
+          "`"
+        )}\`\`\``
+      );
       return member.kick("DiscordRep: " + discordRepInfractionsData.reason);
     }
-    await logChannel.send(`<:good:881629715419516958> Member \`${member.user.tag.replaceAll("`", "\`")}\` is not global banned by <:DR:901516919243415603> DiscordRep or <:ksoft:901516737198055485> Ksoft.Si.`);
+    await logChannel.send(
+      `<:good:881629715419516958> Member \`${member.user.tag.replaceAll(
+        "`",
+        "`"
+      )}\` is not global banned by <:DR:901516919243415603> DiscordRep or <:ksoft:901516737198055485> Ksoft.Si.`
+    );
   });
 };

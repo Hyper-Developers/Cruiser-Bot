@@ -15,9 +15,11 @@ module.exports = async (client) => {
     var channel = msg.channel;
     var issus = false;
     var author = msg.author;
-    let logChannel = await client.channels.fetch(await client.joinleaveLogChannel.get(member.guild.id)).catch(e => {
-      return null;
-    });
+    let logChannel = await client.channels
+      .fetch(await client.joinleaveLogChannel.get(member.guild.id))
+      .catch((e) => {
+        return null;
+      });
     if (
       msg.guild &&
       ((await client.virustotalApikeys.get(msg.guild.id)) ||
@@ -133,7 +135,9 @@ module.exports = async (client) => {
               await logChannel.send(
                 "<:bad:881629455964061717> URL sent by user <@!" +
                   msg.author.id +
-                  "> in <#"+msg.channel.id+"> is unsafe/malicious:\n" +
+                  "> in <#" +
+                  msg.channel.id +
+                  "> is unsafe/malicious:\n" +
                   scanlink
               );
               if (!msg.deleted) {
@@ -165,7 +169,9 @@ module.exports = async (client) => {
               await logChannel.send(
                 "<:warning:881629456039571537> URL sent by user <@!" +
                   msg.author.id +
-                  "> in <#"+msg.channel.id+"> is suspicious:\n" +
+                  "> in <#" +
+                  msg.channel.id +
+                  "> is suspicious:\n" +
                   scanlink
               );
               issus = true;
@@ -196,7 +202,9 @@ module.exports = async (client) => {
               await logChannel.send(
                 "<:bad:881629455964061717> Attachment sent by user <@!" +
                   msg.author.id +
-                  "> in <#"+msg.channel.id+"> is unsafe/malicious:\n" +
+                  "> in <#" +
+                  msg.channel.id +
+                  "> is unsafe/malicious:\n" +
                   scanlink
               );
               if (!msg.deleted) {
@@ -222,7 +230,9 @@ module.exports = async (client) => {
               await logChannel.send(
                 "<:warning:881629456039571537> Attachment sent by user <@!" +
                   msg.author.id +
-                  "> in <#"+msg.channel.id+"> is suspicious:\n" +
+                  "> in <#" +
+                  msg.channel.id +
+                  "> is suspicious:\n" +
                   scanlink
               );
               issus = true;

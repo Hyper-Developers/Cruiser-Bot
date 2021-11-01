@@ -55,7 +55,9 @@ module.exports = async (client) => {
       );
       if (msg.deleted) return;
       if (urls.length || attachments.length) {
-        reaction = await msg.react("<a:analyzing:884596286039396432>").catch(() => null) ;
+        reaction = await msg
+          .react("<a:analyzing:884596286039396432>")
+          .catch(() => null);
       }
     }
     if (msg.guild && (await client.ipqsApikeys.get(msg.guild.id))) {

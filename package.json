@@ -12,6 +12,8 @@
     "statcord.js": "^3.3.0",
     "cors": "^2.8.5",
     "discord-backup": "^3.0.1",
-    "@androz2091/discord-invites-tracker": "^0.1.2"
+    "@androz2091/discord-invites-tracker": "^0.1.2",
+    "uuid": "^8.3.2",
+    "googleapis": "^91.0.0"
   }
 }

@@ -1,7 +1,7 @@
 const express = require("express");
 const axios = require("axios");
 const cors = require("cors");
-const { google } = require('googleapis');
+const { google } = require("googleapis");
 
 module.exports = async (client) => {
   const app = express();
@@ -10,7 +10,7 @@ module.exports = async (client) => {
     process.env.GOOGLE_CLIENT_SECRET,
     process.env.GOOGLE_REDIRECT_URI
   );
-  
+
   client.googleDriveStateToUserId = {};
 
   app.set("trust proxy", "loopback");
@@ -20,7 +20,7 @@ module.exports = async (client) => {
 
   app.get("/", async (req, res) => {
     res.send({
-      success: true
+      success: true,
     });
   });
 
@@ -66,12 +66,12 @@ module.exports = async (client) => {
         }[req.body.state]
       ].set(userResult.id, oauthData);
       res.status(200).send({
-        success: true
+        success: true,
       });
       return;
     } catch (error) {
       res.status(500).send({
-        success: false
+        success: false,
       });
       return;
     }
@@ -80,21 +80,21 @@ module.exports = async (client) => {
   app.post("/drive_authorized", async (req, res) => {
     if (!req.body.code || !req.body.state) {
       res.status(400).send({
-        success: false
+        success: false,
       });
       return;
     }
     const userid = client.googleDriveStateToUserId[req.body.state];
-    const scopes = ['https://www.googleapis.com/auth/drive.appdata'];
+    const scopes = ["https://www.googleapis.com/auth/drive.appdata"];
     const { tokens } = await oauth2Client.getToken(req.body.code);
-    
+
     await client.googleDriveRefreshTokens.put(userid, tokens.refresh_token);
     await client.googleDriveAccessTokens.put(userid, tokens.access_token);
-    
+
     res.status(200).send({
-      success: true
+      success: true,
     });
-    
+
     return;
   });
 

@@ -8,7 +8,11 @@ const fs = require("fs");
 
 module.exports = async (client) => {
   client.on("messageCreate", async (msg) => {
-    if (msg.author.id == client.user.id) return;
+    if (msg.author.id == client.user.id || !msg.guild) return;
+
+    var punishments = await client.antivirusPunishments.get(msg.guild.id);
+    if (!punishments) punishments = 3;
+
     var reaction = null;
     var urls = null;
     var attachments = null;
@@ -96,6 +100,17 @@ module.exports = async (client) => {
             await logChannel.send(
               `<:bad:881629455964061717> URL sent by user <@!${author.id}> in <#${msg.channel.id}> is unsafe/malicious (${ipqsRes.category})`
             );
+            switch (parseInt(punishments)) {
+              case 2:
+                msg.member.kick().catch(() => {});
+                break;
+              case 3:
+              case 4:
+                msg.member.ban().catch(() => {});
+                break;
+              default:
+                break;
+            }
             issus = true;
           }
         })
@@ -145,6 +160,17 @@ module.exports = async (client) => {
               if (!msg.deleted) {
                 await msg.delete();
               }
+              switch (parseInt(punishments)) {
+                case 2:
+                  msg.member.kick().catch(() => {});
+                  break;
+                case 3:
+                case 4:
+                  msg.member.ban().catch(() => {});
+                  break;
+                default:
+                  break;
+              }
               issus = true;
             } else if (
               (scan.malicious && scan.malicious > 1) ||
@@ -176,6 +202,13 @@ module.exports = async (client) => {
                   "> is suspicious:\n" +
                   scanlink
               );
+              switch (parseInt(punishments)) {
+                case 4:
+                  msg.member.kick().catch(() => {});
+                  break;
+                default:
+                  break;
+              }
               issus = true;
             }
           })
@@ -212,6 +245,17 @@ module.exports = async (client) => {
               if (!msg.deleted) {
                 await msg.delete();
               }
+              switch (parseInt(punishments)) {
+                case 2:
+                  msg.member.kick().catch(() => {});
+                  break;
+                case 3:
+                case 4:
+                  msg.member.ban().catch(() => {});
+                  break;
+                default:
+                  break;
+              }
               issus = true;
             } else if (scan.suspicious) {
               if (msg.deleted) {
@@ -237,6 +281,13 @@ module.exports = async (client) => {
                   "> is suspicious:\n" +
                   scanlink
               );
+              switch (parseInt(punishments)) {
+                case 4:
+                  msg.member.kick().catch(() => {});
+                  break;
+                default:
+                  break;
+              }
               issus = true;
             }
           })

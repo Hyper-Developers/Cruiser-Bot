@@ -23,9 +23,7 @@ module.exports = async (client) => {
       setTimeout(async () => {
         messagesLast3s[msg.member.id] -= 1;
       }, 3000);
-      if (
-        maximumRatelimits <= messagesLast3s[msg.member.id]
-      ) {
+      if (maximumRatelimits <= messagesLast3s[msg.member.id]) {
         let doRepeat = true;
         while (doRepeat) {
           let lastMsgs = await channel.messages.fetch({ messages: 50 });
@@ -41,7 +39,9 @@ module.exports = async (client) => {
           );
         }
         let lockdownExp = repeatedMutes[msg.member.id];
-        let lockdownLen = parseInt((await client.autoInitial.get(channel.guild.id)) || 5) * Math.pow(2, lockdownExp);
+        let lockdownLen =
+          parseInt((await client.autoInitial.get(channel.guild.id)) || 5) *
+          Math.pow(2, lockdownExp);
         await msg.member.timeout(lockdownLen * 1000);
         repeatedMutes[msg.member.id] += 1;
         setTimeout(async () => {

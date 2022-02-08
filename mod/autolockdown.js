@@ -59,8 +59,12 @@ module.exports = async (client) => {
         }
         let lockdownExp = repeatedLockdowns[channel.id];
         repeatedLockdowns[channel.id] += 1;
-        let lockdownLen = parseInt((await client.autoInitial.get(channel.guild.id)) || 5) * Math.pow(2, lockdownExp);
-        await channel.send(`Automatic lockdown for ${lockdownLen} seconds triggered by influx of messages`);
+        let lockdownLen =
+          parseInt((await client.autoInitial.get(channel.guild.id)) || 5) *
+          Math.pow(2, lockdownExp);
+        await channel.send(
+          `Automatic lockdown for ${lockdownLen} seconds triggered by influx of messages`
+        );
         setTimeout(async () => {
           await channel.permissionOverwrites.edit(
             channel.guild.roles.everyone,
@@ -71,7 +75,9 @@ module.exports = async (client) => {
               reason: "Lockdown ended",
             }
           );
-          await channel.send(`Automatic lockdown for ${lockdownLen} seconds has ended`);
+          await channel.send(
+            `Automatic lockdown for ${lockdownLen} seconds has ended`
+          );
           setTimeout(async () => {
             if (repeatedLockdowns[channel.id] == lockdownExp + 1) {
               repeatedLockdowns[channel.id] = 0;

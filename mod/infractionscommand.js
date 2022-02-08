@@ -18,11 +18,7 @@ module.exports = async (client) => {
         ephemeral: true,
       });
     const settings = {
-      antispam: [
-        client.autoInitial,
-        interaction.guild.id,
-        "initial",
-      ],
+      antispam: [client.autoInitial, interaction.guild.id, "initial"],
       antivirus: [
         client.antivirusPunishments,
         interaction.guild.id,

@@ -1,17 +1,18 @@
 {
   "dependencies": {
+    "@androz2091/discord-invites-tracker": "^0.1.2",
+    "@fingerprintjs/fingerprintjs-pro-server-api": "^0.2.1",
     "@keyvhq/core": "^1.4.0",
     "@keyvhq/mysql": "^1.5.1",
     "axios": "^0.21.4",
+    "cors": "^2.8.5",
+    "discord-backup": "^3.0.1",
     "discord.js": "^13.1.0",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "get-urls": "^10.0.0",
     "node-virustotal": "^3.35.0",
     "node-wget-promise": "^0.1.6",
-    "statcord.js": "^3.3.0",
-    "cors": "^2.8.5",
-    "discord-backup": "^3.0.1",
-    "@androz2091/discord-invites-tracker": "^0.1.2"
+    "statcord.js": "^3.3.0"
   }
 }

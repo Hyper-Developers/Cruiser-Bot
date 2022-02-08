@@ -4,103 +4,57 @@ const Keyv = require("@keyvhq/core");
 const KeyvMySQL = require("@keyvhq/mysql");
 const fs = require("fs");
 
+function addDatabase(client, prop, namespace) {
+  client[prop] = new Keyv({
+    store: new KeyvMySQL(process.env.MYSQL),
+    namespace: namespace,
+  });
+}
+
+const databases = {
+  // Anti-spam
+  "targetRatelimits60s": "targetRatelimits60s",
+  "maximumRatelimits3s": "maximumRatelimits3s",
+  "maximumRatelimitsPerUser3s": "maximumRatelimitsPerUser3s",
+  "automuteInitial": "automuteInitial",
+  "autolockdownInitial": "autolockdownInitial",
+  // Anti-malicious message
+  "enableAntibot": "enableAntibot",
+  "ipqsApikeys": "ipqsApikeys",
+  "virustotalApikeys": "virustotalApikeys",
+  "enableAntiwebhook": "enableAntiwebhook",
+  "antivirusPunishments": "antivirusPunishments",
+  // Anti-nuke backups
+  "enableAntinuke": "enableAntinuke",
+  "antinukeTokens": "antinukeTokens",
+  "antinukeReminderCooldown": "antinukeReminderCooldown",
+  // Anti-abuse
+  "enableAntiabuse": "enableAntiabuse",
+  // Anti-bot joins
+  "enableHumanVerification": "enableHumanVerification",
+  "humanVerificationNeeded": "humanVerificationNeeded",
+  "informationTokens": "informationTokens",
+  "enableDrep": "enableDrep",
+  "enableKsoft": "enableKsoft",
+  // Invite tracking
+  "enableInvitetracking": "enableInvitetracking",
+  "invitesUsed": "invitesUsed",
+  // Log channels
+  "auditLogChannel": "auditLogChannel",
+  "configLogChannel": "configLogChannel",
+  "antiAbuseLogChannel": "antiAbuseLogChannel",
+  "antiScamLogChannel": "antiScamLogChannel",
+  "antiBotChannel": "antiBotChannel",
+  "backupsLogChannel": "backupsLogChannel",
+  "joinleaveLogChannel": "joinleaveLogChannel"
+}
+
 (async () => {
   const client = new Discord.Client({
     intents: Object.values(Discord.Intents.FLAGS),
   });
 
-  client.targetRatelimits60s = new Keyv({
-    store: new KeyvMySQL(process.env.MYSQL),
-    namespace: "targetRatelimits60s",
-  });
-  client.maximumRatelimits3s = new Keyv({
-    store: new KeyvMySQL(process.env.MYSQL),
-    namespace: "maximumRatelimits3s",
-  });
-  client.maximumRatelimitsPerUser3s = new Keyv({
-    store: new KeyvMySQL(process.env.MYSQL),
-    namespace: "maximumRatelimitsPerUser3s",
-  });
-  client.virustotalApikeys = new Keyv({
-    store: new KeyvMySQL(process.env.MYSQL),
-    namespace: "virustotalApikeys",
-  });
-  client.enableDrep = new Keyv({
-    store: new KeyvMySQL(process.env.MYSQL),
-    namespace: "enableDrep",
-  });
-  client.enableKsoft = new Keyv({
-    store: new KeyvMySQL(process.env.MYSQL),
-    namespace: "enableKsoft",
-  });
-  client.enableAntibot = new Keyv({
-    store: new KeyvMySQL(process.env.MYSQL),
-    namespace: "enableAntibot",
-  });
-  client.enableAntiwebhook = new Keyv({
-    store: new KeyvMySQL(process.env.MYSQL),
-    namespace: "enableAntiwebhook",
-  });
-  client.enableAntinuke = new Keyv({
-    store: new KeyvMySQL(process.env.MYSQL),
-    namespace: "enableAntinuke",
-  });
-  client.ipqsApikeys = new Keyv({
-    store: new KeyvMySQL(process.env.MYSQL),
-    namespace: "ipqsApikeys",
-  });
-  client.enableInvitetracking = new Keyv({
-    store: new KeyvMySQL(process.env.MYSQL),
-    namespace: "enableInvitetracking",
-  });
-  client.enableAntiabuse = new Keyv({
-    store: new KeyvMySQL(process.env.MYSQL),
-    namespace: "enableAntiabuse",
-  });
-  client.invitesUsed = new Keyv({
-    store: new KeyvMySQL(process.env.MYSQL),
-    namespace: "invitesUsed",
-  });
-  client.antinukeTokens = new Keyv({
-    store: new KeyvMySQL(process.env.MYSQL),
-    namespace: "antinukeTokens",
-  });
-  client.informationTokens = new Keyv({
-    store: new KeyvMySQL(process.env.MYSQL),
-    namespace: "informationTokens",
-  });
-  client.antinukeReminderCooldown = new Keyv({
-    store: new KeyvMySQL(process.env.MYSQL),
-    namespace: "antinukeReminderCooldown",
-  });
-  client.auditLogChannel = new Keyv({
-    store: new KeyvMySQL(process.env.MYSQL),
-    namespace: "auditLogChannel",
-  });
-  client.configLogChannel = new Keyv({
-    store: new KeyvMySQL(process.env.MYSQL),
-    namespace: "configLogChannel",
-  });
-  client.antiAbuseLogChannel = new Keyv({
-    store: new KeyvMySQL(process.env.MYSQL),
-    namespace: "antiAbuseLogChannel",
-  });
-  client.antiScamLogChannel = new Keyv({
-    store: new KeyvMySQL(process.env.MYSQL),
-    namespace: "antiScamLogChannel",
-  });
-  client.antiBotChannel = new Keyv({
-    store: new KeyvMySQL(process.env.MYSQL),
-    namespace: "antiBotChannel",
-  });
-  client.backupsLogChannel = new Keyv({
-    store: new KeyvMySQL(process.env.MYSQL),
-    namespace: "backupsLogChannel",
-  });
-  client.joinleaveLogChannel = new Keyv({
-    store: new KeyvMySQL(process.env.MYSQL),
-    namespace: "joinleaveLogChannel",
-  });
+  Object.keys(databases).forEach(key => addDatabase(client, key, databases[key]));
 
   await Promise.all(
     fs

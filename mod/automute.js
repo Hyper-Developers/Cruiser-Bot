@@ -2,7 +2,6 @@ module.exports = async (client) => {
   const messagesLast3s = {};
   const repeatedMutes = {};
   client.on("messageCreate", async (msg) => {
-    return;
     let channel = msg.channel;
     let maximumRatelimits = await client.maximumRatelimitsPerUser3s.get(
       channel.id
@@ -25,18 +24,8 @@ module.exports = async (client) => {
         messagesLast3s[msg.member.id] -= 1;
       }, 3000);
       if (
-        maximumRatelimits <= messagesLast3s[msg.member.id] &&
-        channel.permissionsFor(msg.member).has("SEND_MESSAGES")
+        maximumRatelimits <= messagesLast3s[msg.member.id]
       ) {
-        await channel.permissionOverwrites.edit(
-          msg.member,
-          {
-            SEND_MESSAGES: false,
-          },
-          {
-            reason: "Automatic mute triggered by influx of messages",
-          }
-        );
         let doRepeat = true;
         while (doRepeat) {
           let lastMsgs = await channel.messages.fetch({ messages: 50 });
@@ -52,23 +41,14 @@ module.exports = async (client) => {
           );
         }
         let lockdownExp = repeatedMutes[msg.member.id];
+        let lockdownLen = parseInt((await client.autoInitial.get(channel.guild.id)) || 5) * Math.pow(2, lockdownExp);
+        await msg.member.timeout(lockdownLen * 1000);
         repeatedMutes[msg.member.id] += 1;
         setTimeout(async () => {
-          await channel.permissionOverwrites.edit(
-            msg.member.id,
-            {
-              SEND_MESSAGES: true,
-            },
-            {
-              reason: "Automatic mute ended",
-            }
-          );
-          setTimeout(async () => {
-            if (repeatedMutes[channel.id] == lockdownExp + 1) {
-              repeatedMutes[channel.id] = 0;
-            }
-          }, 3000);
-        }, 5 * Math.pow(2, lockdownExp));
+          if (repeatedMutes[msg.member.id] == lockdownExp + 1) {
+            repeatedMutes[msg.member.id] = 0;
+          }
+        }, lockdownLen * 1000 * 2);
       }
     }
   });

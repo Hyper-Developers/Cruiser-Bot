@@ -16,8 +16,7 @@ const databases = {
   "targetRatelimits60s": "targetRatelimits60s",
   "maximumRatelimits3s": "maximumRatelimits3s",
   "maximumRatelimitsPerUser3s": "maximumRatelimitsPerUser3s",
-  "automuteInitial": "automuteInitial",
-  "autolockdownInitial": "autolockdownInitial",
+  "autoInitial": "autoInitial",
   // Anti-malicious message
   "enableAntibot": "enableAntibot",
   "ipqsApikeys": "ipqsApikeys",

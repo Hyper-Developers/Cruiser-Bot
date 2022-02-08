@@ -3,7 +3,10 @@ const axios = require("axios");
 const cors = require("cors");
 const fpjs = require("@fingerprintjs/fingerprintjs-pro-server-api");
 
-const fpjs_client = new fpjs.FingerprintJsServerApiClient({ region: fpjs.Region.Global, apiToken: process.env.FPJS_API_KEY });
+const fpjs_client = new fpjs.FingerprintJsServerApiClient({
+  region: fpjs.Region.Global,
+  apiToken: process.env.FPJS_API_KEY,
+});
 
 module.exports = async (client) => {
   const app = express();
@@ -24,22 +27,29 @@ module.exports = async (client) => {
       !req.body.code ||
       !req.body.state ||
       !req.body.visitorId ||
-      ["requestguildsjointoken", "requestinformationtoken"].indexOf(req.body.state) < 0
-    ) return res.status(400).send({
-      success: false,
-    });
-    try {
-      const visitorResult = await fpjs_client.getVisitorHistory(req.body.visitorId, {
-        limit: 1
+      ["requestguildsjointoken", "requestinformationtoken"].indexOf(
+        req.body.state
+      ) < 0
+    )
+      return res.status(400).send({
+        success: false,
       });
+    try {
+      const visitorResult = await fpjs_client.getVisitorHistory(
+        req.body.visitorId,
+        {
+          limit: 1,
+        }
+      );
       if (
         visitorResult.visitorId != req.body.visitorId ||
         visitorResult.visits[0].incognito ||
         Date.now() - 1000 * 60 > visitorResult.visits[0].timestamp ||
         req.ips.indexOf(visitorResult.visits[0].ip) < 0
-      ) return res.status(403).send({
-        success: false,
-      });
+      )
+        return res.status(403).send({
+          success: false,
+        });
       const oauthResult = await axios({
         method: "POST",
         url: "https://discord.com/api/oauth2/token",
